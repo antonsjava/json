@@ -144,7 +144,6 @@ public class TraversalParser {
         source.move();
         int c = source.current();
         while(c != -1) {
-        System.out.println(" " + ((char)c) + " - " + escape);
             if(escape) {
                 escape = false;
                 //source.move();
