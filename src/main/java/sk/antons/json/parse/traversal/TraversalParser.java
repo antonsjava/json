@@ -144,14 +144,15 @@ public class TraversalParser {
         source.move();
         int c = source.current();
         while(c != -1) {
+        System.out.println(" " + ((char)c) + " - " + escape);
             if(escape) {
                 escape = false;
-                source.move();
+                //source.move();
             } else {
                 if(c == '\\') {
                     escape = true;
                 } else {
-                    escape = false;
+                    //escape = false;
                     if(c == '"') {
                         source.move();
                         break;
