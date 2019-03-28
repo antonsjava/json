@@ -15,6 +15,7 @@
  */
 package sk.antons.json.source;
 
+import java.io.BufferedReader;
 import java.io.Reader;
 
 /**
@@ -30,6 +31,7 @@ public class ReaderSource implements JsonSource {
     
     public ReaderSource(Reader reader) {
         if(reader == null) throw new IllegalArgumentException("Unable to parse null Json reader");
+        if(!(reader instanceof BufferedReader)) reader = new BufferedReader(reader);
         this.reader = reader;
     }
 

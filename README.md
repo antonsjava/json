@@ -120,6 +120,46 @@ values you can call following code. But it is faster only for special cases
 
 ```
 
+## Formatting without complete parsing
+
+If you have a json structure and you want to transform it to noindent form or to 
+indent form and you don't want to parse it You can use simplified formatting.
+It works for well formated json structures only. 
+
+The class don't make full parsing of input. Implementation just tries to recognize 
+blank characters and string literals and transform them somehow.
+
+```java
+  String json = ...
+  String formatedJson = JsonFormat.from(json).indent(2, ' ').toText();
+  String formatedJson = JsonFormat.from(json).noindent().toText();
+```
+Or you can use Reader/Writer version
+
+```java
+  Reader jsonReader = ...
+  Writer jsonWriter = ...
+  String formatedJson = JsonFormat.from(jsonReader).indent(2, ' ').toWriter(jsonWriter);
+  String formatedJson = JsonFormat.from(jsonReader).noindent().toWriter(jsonWriter);
+```
+There is also possible to cut string literals to defined length. This can be useful
+for logging json which contains very long data (like binaries), which are not necessary 
+to log fully.
+
+```java
+  String json = ...
+  String formatedJson = JsonFormat.from(json).indent(2, ' ').cutStringLiterals(50).toText();
+```
+
+The result can looks like 
+
+```json
+{
+  "name" : "image.jpg",
+  "bytes" : "VGhlcmUgaXMgYWxzbyBwb3NzaWJsZSB0byBjdXQgc3RyaW5nIGxpdG ..."
+}
+```
+
 
 
 ## Maven usage
@@ -128,6 +168,6 @@ values you can call following code. But it is faster only for special cases
    <dependency>
       <groupId>com.github.antonsjava</groupId>
       <artifactId>json</artifactId>
-      <version>1.0</version>
+      <version>1.3</version>
    </dependency>
 ```
