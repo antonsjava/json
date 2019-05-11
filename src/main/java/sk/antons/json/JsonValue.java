@@ -203,4 +203,14 @@ public interface JsonValue {
      * Removes this instance from parent object.
      */
     void remove();
+
+
+    /**
+     * Replaces this instance in parent object by this value.
+     * Do nothing if this object is root and works like remove()
+     * is new value is null;
+     * @param newValue new value which must replace this instance.
+     */
+    void replaceBy(JsonValue newValue);
+    
 }

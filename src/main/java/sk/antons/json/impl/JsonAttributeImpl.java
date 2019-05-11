@@ -33,6 +33,7 @@ public class JsonAttributeImpl implements JsonAttribute, JsonGroup, JsonMember {
     public void setName(JsonStringLiteralImpl name) { this.name = name; }
     public void setValue(JsonValue value) { 
         if(value == null) throw new NullPointerException("Attribute value can't be null");
+        if((this.value != null) && (this.value instanceof JsonMember)) ((JsonMember)value).setGroup(null);
         if(value instanceof JsonMember) ((JsonMember)value).setGroup(this);
         this.value = value; 
     }

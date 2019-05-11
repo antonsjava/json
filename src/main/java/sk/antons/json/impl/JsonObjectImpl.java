@@ -35,11 +35,6 @@ public class JsonObjectImpl extends JsonValueImpl implements JsonObject, JsonGro
     
     public List<JsonAttributeImpl> attrs() { return attrs; }
 
-    JsonGroup group = null;
-    @Override
-    public JsonGroup group() { return group; }
-    @Override
-    public void setGroup(JsonGroup group) { this.group = group; }
 
     @Override
     public void toCompactString(StringBuilder sb) {

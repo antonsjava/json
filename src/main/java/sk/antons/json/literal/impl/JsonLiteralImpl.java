@@ -30,18 +30,12 @@ import sk.antons.json.match.PathMatcher;
  *
  * @author antons
  */
-public abstract class JsonLiteralImpl extends JsonValueImpl implements JsonLiteral, JsonMember {
+public abstract class JsonLiteralImpl extends JsonValueImpl implements JsonLiteral {
     protected String literal;
     protected int offset;
     protected int length;
     protected boolean cachedValue = false;
     protected String cachedValueString = null;
-    
-    JsonGroup group = null;
-    @Override
-    public JsonGroup group() { return group; }
-    @Override
-    public void setGroup(JsonGroup group) { this.group = group; }
 
     public abstract Type type();
 

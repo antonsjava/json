@@ -33,7 +33,13 @@ import sk.antons.json.match.PathMatcher;
  *
  * @author antons
  */
-public abstract class JsonValueImpl implements JsonValue {
+public abstract class JsonValueImpl implements JsonValue, JsonMember {
+    
+    protected JsonGroup group = null;
+    @Override
+    public JsonGroup group() { return group; }
+    @Override
+    public void setGroup(JsonGroup group) { this.group = group; }
 
     @Override public JsonObject asObject() { return (JsonObject)this; }
     @Override public JsonArray asArray() { return (JsonArray)this; }
@@ -188,6 +194,22 @@ public abstract class JsonValueImpl implements JsonValue {
         return rv;
     }
  
+    @Override
+    public void remove() {
+        if(group == null) return;
+        if(group instanceof JsonAttributeImpl) ((JsonAttributeImpl)group).remove();
+        else if(group instanceof JsonArrayImpl) ((JsonArrayImpl)group).remove(this);
+        else {}
+        setGroup(null);
+    }
 
+    @Override
+    public void replaceBy(JsonValue newValue) {
+        if(group == null) return;
+        if(group instanceof JsonAttributeImpl) ((JsonAttributeImpl)group).setValue(newValue);
+        else if(group instanceof JsonArrayImpl) ((JsonArrayImpl)group).replaceBy(this, newValue);
+        else {}
+        setGroup(null);
+    }
         
 }

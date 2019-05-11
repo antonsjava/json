@@ -31,13 +31,6 @@ public class JsonArrayImpl extends JsonValueImpl implements JsonArray, JsonGroup
     
     public List<JsonValue> values() { return values; }
 
-    JsonGroup group = null;
-    @Override
-    public JsonGroup group() { return group; }
-    @Override
-    public void setGroup(JsonGroup group) { this.group = group; }
-
-
     @Override
     public void toCompactString(StringBuilder sb) {
         sb.append('[');
@@ -176,13 +169,17 @@ public class JsonArrayImpl extends JsonValueImpl implements JsonArray, JsonGroup
         values.remove(value);
     }
 
-    @Override
-    public void remove() {
-        if(group == null) return;
-        if(group instanceof JsonAttributeImpl) ((JsonAttributeImpl)group).remove();
-        else if(group instanceof JsonArrayImpl) ((JsonArrayImpl)group).remove(this);
-        else {}
-        setGroup(null);
+
+    public void replaceBy(JsonValue oldValue, JsonValue newValue) {
+        int index = memberIndex((JsonMember)oldValue);
+        if(index < 0) {
+            add(newValue);
+        } else {
+            remove(oldValue);
+            add(newValue, index);
+        }
     }
+
+
 
 }
