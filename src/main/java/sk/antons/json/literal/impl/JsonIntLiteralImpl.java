@@ -38,9 +38,7 @@ public class JsonIntLiteralImpl extends JsonLiteralImpl implements JsonIntLitera
     
     public long longValue() {
         if(cachedValue) return cachedValueInt;
-        cachedValueInt = Long.parseLong(literal);
-        cachedValueString = literal;
-        cachedValue = true;
+        cachedValueInt = Long.parseLong(stringValue());
         return cachedValueInt;
     }
     

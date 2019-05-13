@@ -38,9 +38,7 @@ public class JsonBoolLiteralImpl extends JsonLiteralImpl implements JsonBoolLite
     
     public boolean boolValue() {
         if(cachedValue) return cachedValueBool;
-        cachedValueBool = "true".equals(literal);
-        cachedValueString = literal;
-        cachedValue = true;
+        cachedValueBool = "true".equals(stringValue());
         return cachedValueBool;
     }
 }

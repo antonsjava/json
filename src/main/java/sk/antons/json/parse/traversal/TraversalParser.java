@@ -77,7 +77,6 @@ public class TraversalParser {
         } catch(StopTraverse e) {
             //regular stop
         } catch(Exception e) {
-            
             String contextInfo = null;
             try {
                 contextInfo = handler.contextInfo();

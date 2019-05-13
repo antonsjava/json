@@ -43,9 +43,7 @@ public class JsonFracLiteralImpl extends JsonLiteralImpl implements JsonFracLite
     
     public BigDecimal bdValue() {
         if(cachedValue) return cachedValueBd;
-        cachedValueBd = new BigDecimal(literal);
-        cachedValueString = literal;
-        cachedValue = true;
+        cachedValueBd = new BigDecimal(stringValue());
         return cachedValueBd;
     }
     

@@ -15,6 +15,8 @@
  */
 package sk.antons.json.literal;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import sk.antons.json.literal.impl.JsonExpLiteralImpl;
 import sk.antons.json.literal.impl.JsonNullLiteralImpl;
 import sk.antons.json.literal.impl.JsonFracLiteralImpl;
@@ -95,6 +97,16 @@ public class LiteralTest {
         literal = JsonLiteralImpl.instance(value, 0, value.length());
         Assert.assertEquals("class ",  literal.getClass(), JsonFracLiteralImpl.class);
         Assert.assertEquals("literal ",  literal.literal(), "-123.2");
+    }
+    
+    @Test
+	public void fracTest2() throws Exception {
+        String value = "500.00";
+        log.info("-------- frac: value '"+value+"' --------");
+        JsonLiteralImpl literal = JsonLiteralImpl.instance(value, 0, value.length());
+        Assert.assertEquals("class ",  literal.getClass(), JsonFracLiteralImpl.class);
+        Assert.assertEquals("literal ",  literal.literal(), "500.00");
+        Assert.assertEquals("bd ",  literal.asFracLiteral().bdValue(), new BigDecimal("500.00"));
     }
     
     @Test
