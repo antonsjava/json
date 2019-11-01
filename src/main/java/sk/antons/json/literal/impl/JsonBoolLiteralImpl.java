@@ -23,6 +23,7 @@ import sk.antons.json.literal.JsonBoolLiteral;
  */
 public class JsonBoolLiteralImpl extends JsonLiteralImpl implements JsonBoolLiteral {
     
+    private boolean cachedValue = false;
     private boolean cachedValueBool = false;
     
     public JsonBoolLiteralImpl(boolean value) {
@@ -39,6 +40,7 @@ public class JsonBoolLiteralImpl extends JsonLiteralImpl implements JsonBoolLite
     public boolean boolValue() {
         if(cachedValue) return cachedValueBool;
         cachedValueBool = "true".equals(stringValue());
+        cachedValue = true;
         return cachedValueBool;
     }
 }

@@ -24,6 +24,7 @@ import sk.antons.json.literal.JsonFracLiteral;
  */
 public class JsonFracLiteralImpl extends JsonLiteralImpl implements JsonFracLiteral {
     
+    private boolean cachedValue = false;
     private BigDecimal cachedValueBd = null;
     private int dotPos = -1;
     
@@ -44,6 +45,7 @@ public class JsonFracLiteralImpl extends JsonLiteralImpl implements JsonFracLite
     public BigDecimal bdValue() {
         if(cachedValue) return cachedValueBd;
         cachedValueBd = new BigDecimal(stringValue());
+        cachedValue = true;
         return cachedValueBd;
     }
     

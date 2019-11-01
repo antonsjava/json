@@ -24,6 +24,9 @@ import sk.antons.json.util.JsonEscaper;
  */
 public class JsonStringLiteralImpl extends JsonLiteralImpl implements JsonStringLiteral {
 
+    private boolean cachedValue = false;
+    private String cachedValueString;
+
     public JsonStringLiteralImpl(String literal) {
         super(literal);
     }

@@ -20,8 +20,6 @@ import sk.antons.json.JsonValue;
 import sk.antons.json.impl.JsonArrayImpl;
 import sk.antons.json.impl.JsonAttributeImpl;
 import sk.antons.json.literal.JsonLiteral;
-import sk.antons.json.impl.JsonGroup;
-import sk.antons.json.impl.JsonMember;
 import sk.antons.json.impl.JsonValueImpl;
 import sk.antons.json.match.Match;
 import sk.antons.json.match.PathMatcher;
@@ -34,7 +32,7 @@ public abstract class JsonLiteralImpl extends JsonValueImpl implements JsonLiter
     protected String literal;
     protected int offset;
     protected int length;
-    protected boolean cachedValue = false;
+    private boolean cachedValue = false;
     protected String cachedValueString = null;
 
     public abstract Type type();
@@ -63,7 +61,9 @@ public abstract class JsonLiteralImpl extends JsonValueImpl implements JsonLiter
 
     public String stringValue() {
         if(cachedValue) return cachedValueString;
-        return literal();
+        cachedValueString = literal();
+        cachedValue = true;
+        return cachedValueString;
     }
     
 

@@ -24,6 +24,7 @@ import sk.antons.json.literal.JsonExpLiteral;
  */
 public class JsonExpLiteralImpl extends JsonLiteralImpl implements JsonExpLiteral {
     
+    private boolean cachedValue = false;
     private BigDecimal cachedValueBd = null;
     private int dotPos = -1;
     private int ePos = -1;
@@ -51,6 +52,7 @@ public class JsonExpLiteralImpl extends JsonLiteralImpl implements JsonExpLitera
     public BigDecimal bdValue() {
         if(cachedValue) return cachedValueBd;
         cachedValueBd = new BigDecimal(stringValue());
+        cachedValue = true;
         return cachedValueBd;
     }
     

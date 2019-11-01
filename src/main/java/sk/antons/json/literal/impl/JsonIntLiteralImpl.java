@@ -23,6 +23,7 @@ import sk.antons.json.literal.JsonIntLiteral;
  */
 public class JsonIntLiteralImpl extends JsonLiteralImpl implements JsonIntLiteral {
     
+    private boolean cachedValue = false;
     private long cachedValueInt = 0;
     
     public JsonIntLiteralImpl(long value) {
@@ -39,6 +40,7 @@ public class JsonIntLiteralImpl extends JsonLiteralImpl implements JsonIntLitera
     public long longValue() {
         if(cachedValue) return cachedValueInt;
         cachedValueInt = Long.parseLong(stringValue());
+        cachedValue = true;
         return cachedValueInt;
     }
     
