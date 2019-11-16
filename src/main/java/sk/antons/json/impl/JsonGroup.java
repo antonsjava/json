@@ -15,10 +15,13 @@
  */
 package sk.antons.json.impl;
 
+import sk.antons.json.JsonValue;
+
 /**
  *
  * @author antons
  */
 public interface JsonGroup {
     int memberIndex(JsonMember m);    
+    boolean isDescendantOf(JsonValue parent); 
 }

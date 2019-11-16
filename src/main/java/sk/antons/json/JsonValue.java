@@ -212,5 +212,12 @@ public interface JsonValue {
      * @param newValue new value which must replace this instance.
      */
     void replaceBy(JsonValue newValue);
+
+    /**
+     * Returns true is this value is descendant of parent value;
+     * @param parent possible paretn value
+     * @return true if parent is parent of this.
+     */
+    boolean isDescendantOf(JsonValue parent);
     
 }

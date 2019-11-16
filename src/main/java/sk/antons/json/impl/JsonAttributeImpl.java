@@ -59,4 +59,21 @@ public class JsonAttributeImpl implements JsonAttribute, JsonGroup, JsonMember {
         setGroup(null);
     }
 
+    
+    @Override
+    public boolean isDescendantOf(JsonValue parent) {
+        if(parent == null) return false;
+        if(parent == this) return true;
+        JsonMember m = null;
+        JsonGroup g = null;
+        if(this instanceof JsonMember) {
+            m = (JsonMember)this;
+            g = m.group();
+            if(g == null) return false;
+            return g.isDescendantOf(parent);
+        } else {
+            return false;
+        }
+    }
+
 }
