@@ -13,26 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package sk.antons.json.match;
+package sk.antons.json.match.wild;
 
+import sk.antons.json.match.*;
 import java.util.List;
 
 /**
  * SimplePathMatcher provider with short name;
  * @author antons
  */
-public class SPM  {
+public class WPM  {
 
-    public static SimplePathMatcher path(List<String> path) {
-        return SimplePathMatcher.instance(path);
+    public static WildPathMatcher path(List<String> path) {
+        return WildPathMatcher.instance(path);
     }
     
-    public static SimplePathMatcher path(String... path) {
-        return SimplePathMatcher.instance(path);
+    public static WildPathMatcher path(String... path) {
+        return WildPathMatcher.instance(path);
     }
     
-    public static SimplePathMatcher fromPath(String path) {
-        return new SimplePathMatcher(PathSplitter.split(path));
+    public static WildPathMatcher fromPath(String path) {
+        return new WildPathMatcher(PathSplitter.split(path));
     }
     
 }
