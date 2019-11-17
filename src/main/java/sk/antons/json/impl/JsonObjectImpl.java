@@ -273,4 +273,16 @@ public class JsonObjectImpl extends JsonValueImpl implements JsonObject, JsonGro
         else {}
         setGroup(null);
     }
+
+    @Override
+    public JsonValue copy() {
+        JsonObjectImpl rv = new JsonObjectImpl();
+        for(int i = 0; i < attrs.size(); i++) {
+            JsonAttribute attr = attr(i);
+            rv.add(attr.name().stringValue(), attr.value().copy());
+        }
+        return rv;
+    }
+
+    
 }

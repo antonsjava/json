@@ -180,6 +180,15 @@ public class JsonArrayImpl extends JsonValueImpl implements JsonArray, JsonGroup
         }
     }
 
+    @Override
+    public JsonValue copy() {
+        JsonArrayImpl rv = new JsonArrayImpl();
+        for(JsonValue value : values) {
+            rv.add(value.copy());
+        }
+        return rv;
+    }
+
 
 
 }

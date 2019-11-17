@@ -195,6 +195,20 @@ public abstract class JsonValueImpl implements JsonValue, JsonMember {
     }
 
     @Override
+    public String pathAsString() {
+        StringBuilder sb = new StringBuilder();
+        String[] path = path();
+        if(path != null) {
+            for(String string : path) {
+                sb.append("/").append(string);
+            }
+        }
+        return sb.toString();
+    }
+
+    
+
+    @Override
     public boolean isDescendantOf(JsonValue parent) {
         if(parent == null) return false;
         if(parent == this) return true;

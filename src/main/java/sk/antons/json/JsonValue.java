@@ -198,6 +198,12 @@ public interface JsonValue {
      * @return path of this instance
      */
     String[] path();
+    
+    /**
+     * Returns path of this value in json structure
+     * @return path of this instance
+     */
+    String pathAsString();
 
     /**
      * Removes this instance from parent object.
@@ -219,5 +225,11 @@ public interface JsonValue {
      * @return true if parent is parent of this.
      */
     boolean isDescendantOf(JsonValue parent);
+    
+    /**
+     * Makes deep copy of this value.
+     * @return copy of this
+     */
+    JsonValue copy();
     
 }
