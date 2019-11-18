@@ -117,8 +117,13 @@ values you can call following code. But it is faster only for special cases
   String value = LiteralParser.firstAsString(
                     StringSource.instance(json)
                     , SimplePathMatcher.instance("*", "cars", "*"));
-
 ```
+It is possible to use WildPathMatcher for searching. In this case there are two types of path 
+elements. 
+ - single wild path element - it is direct name or you van use * and ? to represent more/single
+   characters in single path element. (like "car-*" or "car-??")
+ - multiple wild path element "**" - it represents any sequence of path elements. 
+
 
 ## Formatting without complete parsing
 
