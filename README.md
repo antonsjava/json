@@ -173,6 +173,6 @@ The result can looks like
    <dependency>
       <groupId>com.github.antonsjava</groupId>
       <artifactId>json</artifactId>
-      <version>1.3</version>
+      <version>1.8</version>
    </dependency>
 ```
