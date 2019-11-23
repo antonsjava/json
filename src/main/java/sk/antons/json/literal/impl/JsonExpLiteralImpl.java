@@ -16,6 +16,7 @@
 package sk.antons.json.literal.impl;
 
 import java.math.BigDecimal;
+import sk.antons.json.JsonValue;
 import sk.antons.json.literal.JsonExpLiteral;
 
 /**
@@ -56,4 +57,8 @@ public class JsonExpLiteralImpl extends JsonLiteralImpl implements JsonExpLitera
         return cachedValueBd;
     }
     
+    @Override
+    public JsonValue copy() {
+        return new JsonExpLiteralImpl(literal, offset, length, dotPos, ePos);
+    }
 }

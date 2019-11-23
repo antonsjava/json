@@ -16,6 +16,7 @@
 package sk.antons.json.literal.impl;
 
 import java.math.BigDecimal;
+import sk.antons.json.JsonValue;
 import sk.antons.json.literal.JsonFracLiteral;
 
 /**
@@ -49,4 +50,8 @@ public class JsonFracLiteralImpl extends JsonLiteralImpl implements JsonFracLite
         return cachedValueBd;
     }
     
+    @Override
+    public JsonValue copy() {
+        return new JsonFracLiteralImpl(literal, offset, length, dotPos);
+    }
 }

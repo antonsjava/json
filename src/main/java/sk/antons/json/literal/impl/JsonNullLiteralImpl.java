@@ -15,6 +15,7 @@
  */
 package sk.antons.json.literal.impl;
 
+import sk.antons.json.JsonValue;
 import sk.antons.json.literal.JsonNullLiteral;
 
 /**
@@ -30,5 +31,10 @@ public class JsonNullLiteralImpl extends JsonLiteralImpl implements JsonNullLite
     @Override
     public Type type() { return Type.NULL; }
 
+    
+    @Override
+    public JsonValue copy() {
+        return new JsonNullLiteralImpl();
+    }
 
 }

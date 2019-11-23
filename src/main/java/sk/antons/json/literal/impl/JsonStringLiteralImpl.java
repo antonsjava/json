@@ -15,6 +15,7 @@
  */
 package sk.antons.json.literal.impl;
 
+import sk.antons.json.JsonValue;
 import sk.antons.json.literal.JsonStringLiteral;
 import sk.antons.json.util.JsonEscaper;
 
@@ -51,4 +52,8 @@ public class JsonStringLiteralImpl extends JsonLiteralImpl implements JsonString
         return cachedValueString;
     }
     
+    @Override
+    public JsonValue copy() {
+        return new JsonStringLiteralImpl(literal, offset, length);
+    }
 }

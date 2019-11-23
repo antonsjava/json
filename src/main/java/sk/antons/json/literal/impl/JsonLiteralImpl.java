@@ -176,10 +176,6 @@ public abstract class JsonLiteralImpl extends JsonValueImpl implements JsonLiter
         setGroup(null);
     }
 
-    @Override
-    public JsonValue copy() {
-        return this;
-    }
 
     
 }
