@@ -244,4 +244,25 @@ public abstract class JsonValueImpl implements JsonValue, JsonMember {
         setGroup(null);
     }
         
+    @Override
+    public String name() {
+        JsonMember m = null;
+        JsonGroup g = null;
+        if(this instanceof JsonMember) {
+            m = (JsonMember)this;
+            if(m != null) {
+                g = m.group();
+                if(g != null) {
+                    if(g instanceof JsonArrayImpl) {
+                        int i = g.memberIndex(m);
+                        return String.valueOf(i);
+                    } else if(g instanceof JsonAttributeImpl) {
+                        JsonAttributeImpl a = (JsonAttributeImpl)g;
+                        return a.name().stringValue();
+                    }
+                }
+            }
+        }
+        return null;
+    }
 }

@@ -232,4 +232,9 @@ public interface JsonValue {
      */
     JsonValue copy();
     
+    /**
+     * Returns name of the instance derived from parent.
+     * @return name of value in json tree or null if it is root.
+     */
+    String name();
 }
