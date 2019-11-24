@@ -237,4 +237,15 @@ public interface JsonValue {
      * @return name of value in json tree or null if it is root.
      */
     String name();
+
+    /**
+     * Converts value to value usable for some template frameworks.
+     * 
+     *  - JsonObjects is converted to read only Map
+     *  - JsonArray is converted to read only List
+     *  - JsonLiteral is converted to its java value
+     * 
+     * @return template parameter form of this value
+     */
+    Object asTemplateParam();
 }

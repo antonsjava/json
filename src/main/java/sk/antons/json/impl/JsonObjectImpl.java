@@ -24,6 +24,7 @@ import sk.antons.json.JsonValue;
 import sk.antons.json.literal.impl.JsonStringLiteralImpl;
 import sk.antons.json.match.Match;
 import sk.antons.json.match.PathMatcher;
+import sk.antons.json.template.JsonObjectMapWrapper;
 
 /**
  *
@@ -284,5 +285,9 @@ public class JsonObjectImpl extends JsonValueImpl implements JsonObject, JsonGro
         return rv;
     }
 
+    @Override
+    public Object asTemplateParam() {
+        return JsonObjectMapWrapper.instance(this);
+    }
     
 }

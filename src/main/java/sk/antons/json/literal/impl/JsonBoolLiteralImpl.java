@@ -50,5 +50,9 @@ public class JsonBoolLiteralImpl extends JsonLiteralImpl implements JsonBoolLite
         return new JsonBoolLiteralImpl(literal, offset, length);
     }
 
+    @Override
+    public Object asTemplateParam() {
+        return boolValue();
+    }
 
 }

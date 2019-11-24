@@ -118,11 +118,82 @@ values you can call following code. But it is faster only for special cases
                     StringSource.instance(json)
                     , SimplePathMatcher.instance("*", "cars", "*"));
 ```
+
+## Wild Searching json structure
+
 It is possible to use WildPathMatcher for searching. In this case there are two types of path 
 elements. 
  - single wild path element - it is direct name or you van use * and ? to represent more/single
    characters in single path element. (like "car-*" or "car-??")
  - multiple wild path element "**" - it represents any sequence of path elements. 
+JsonObject
+Example:
+```java
+  List<String> list = o.findAllLiterals(WPM.fromPath("**/person-*/surname"));
+```
+
+## Templating 
+
+JsonValue can be used as parameter for some template frameworks like freemarker.
+Method JsonValue.asTemplateParam() converts JsonValue to 
+ - JsonObject to read only Map
+ - JsonArray to read only List
+ - JsonLiteral to its internal value (String, Long, BigDecimal, Boolean)
+So it is possible to use it directly as parameter for template framework.
+
+Example of data 
+```json
+{
+  "title": "Ing.",
+  "name": "Jano",
+  "surname": "Novotny",
+  "contractid": "1212321",
+  "raw" : {
+  	"simple": "12321",
+	"complex" : {"sub1": "2222"},
+	"list" : ["4444", "5555"],
+	"persons" : [
+		{"name":"Jano"},
+		{"name":"Peter"},
+		{"name":"Juraj"}
+	]
+  }
+}
+```
+Example of freemarker template
+```
+Hello ${name!} ${surname!"Dear client"} ${title}
+Your contract ${contractid} is registered.
+
+Example of data ${raw.complex.sub1}
+
+Simple list
+<#list raw.list as string>
+  ${string}
+</#list>
+
+Complex list
+<#list raw.persons as person>
+  person: ${person.name}
+</#list>
+```
+Result
+```
+Hello Jano Novotny Ing.
+Your contract 1212321 is registered.
+
+Example of data 2222
+
+Simple list
+  4444
+  5555
+
+Complex list
+  person: Jano
+  person: Peter
+  person: Juraj
+```
+
 
 
 ## Formatting without complete parsing
@@ -173,6 +244,6 @@ The result can looks like
    <dependency>
       <groupId>com.github.antonsjava</groupId>
       <artifactId>json</artifactId>
-      <version>1.8</version>
+      <version>1.9</version>
    </dependency>
 ```

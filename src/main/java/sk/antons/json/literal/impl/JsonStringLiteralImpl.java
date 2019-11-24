@@ -56,4 +56,9 @@ public class JsonStringLiteralImpl extends JsonLiteralImpl implements JsonString
     public JsonValue copy() {
         return new JsonStringLiteralImpl(literal, offset, length);
     }
+
+    @Override
+    public Object asTemplateParam() {
+        return stringValue();
+    }
 }

@@ -21,6 +21,7 @@ import java.util.List;
 import sk.antons.json.JsonArray;
 import sk.antons.json.match.Match;
 import sk.antons.json.match.PathMatcher;
+import sk.antons.json.template.JsonArrayListWrapper;
 
 /**
  *
@@ -187,6 +188,11 @@ public class JsonArrayImpl extends JsonValueImpl implements JsonArray, JsonGroup
             rv.add(value.copy());
         }
         return rv;
+    }
+
+    @Override
+    public Object asTemplateParam() {
+        return JsonArrayListWrapper.instance(this);
     }
 
 

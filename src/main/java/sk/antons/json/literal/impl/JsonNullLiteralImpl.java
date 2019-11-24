@@ -37,4 +37,8 @@ public class JsonNullLiteralImpl extends JsonLiteralImpl implements JsonNullLite
         return new JsonNullLiteralImpl();
     }
 
+    @Override
+    public Object asTemplateParam() {
+        return null;
+    }
 }

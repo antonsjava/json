@@ -61,4 +61,9 @@ public class JsonExpLiteralImpl extends JsonLiteralImpl implements JsonExpLitera
     public JsonValue copy() {
         return new JsonExpLiteralImpl(literal, offset, length, dotPos, ePos);
     }
+    
+    @Override
+    public Object asTemplateParam() {
+        return bdValue();
+    }
 }

@@ -49,4 +49,9 @@ public class JsonIntLiteralImpl extends JsonLiteralImpl implements JsonIntLitera
     public JsonValue copy() {
         return new JsonIntLiteralImpl(literal, offset, length);
     }
+
+    @Override
+    public Object asTemplateParam() {
+        return longValue();
+    }
 }

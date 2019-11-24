@@ -54,4 +54,9 @@ public class JsonFracLiteralImpl extends JsonLiteralImpl implements JsonFracLite
     public JsonValue copy() {
         return new JsonFracLiteralImpl(literal, offset, length, dotPos);
     }
+
+    @Override
+    public Object asTemplateParam() {
+        return bdValue();
+    }
 }
