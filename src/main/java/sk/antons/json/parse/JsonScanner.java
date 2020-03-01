@@ -60,6 +60,28 @@ public class JsonScanner {
         current = nextTokenImpl();
         return current;
     }
+    public Token skipNext() { 
+        int num = 0;
+        Token t = null;
+        do {
+            t = next();
+            switch(t) {
+                case ARRAY_START: 
+                    num++;
+                    break;
+                case ARRAY_END: 
+                    num--;
+                    break;
+                case OBJECT_START: 
+                    num++;
+                    break;
+                case OBJECT_END: 
+                    num--;
+                    break;
+            }
+        } while((t != null) && (num > 0));
+        return next();
+    }
     
     public String stringValue() {
         return stringValueImpl();

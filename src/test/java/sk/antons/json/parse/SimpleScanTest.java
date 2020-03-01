@@ -124,4 +124,48 @@ public class SimpleScanTest {
 //            token = scanner.next();
 //        }
     }
+    @Test
+	public void scanskip() throws Exception {
+    	String json = "[{\"name\":\"John\",\"age\":30,\"cars\":[\"Ford\",\"BMW\",\"Fiat\"]}]";
+        log.info("test : " + json);
+        JsonScanner scanner = JsonScanner.instance(json);
+        JsonScanner.Token token = scanner.next();
+        Assert.assertEquals("first: " + token, JsonScanner.Token.ARRAY_START, token);
+        token = scanner.next();
+        Assert.assertEquals("first: " + token, JsonScanner.Token.OBJECT_START, token);
+        token = scanner.next();
+        Assert.assertEquals("first: " + token, JsonScanner.Token.NAME, token);
+        Assert.assertEquals("first: " + token, "name", scanner.stringValue());
+        token = scanner.skipNext();
+        //Assert.assertEquals("first: " + token, JsonScanner.Token.LITERAL, token);
+        //Assert.assertEquals("first: " + token, "John", scanner.stringValue());
+        //token = scanner.next();
+        Assert.assertEquals("first: " + token, JsonScanner.Token.NAME, token);
+        token = scanner.next();
+        Assert.assertEquals("first: " + token, JsonScanner.Token.LITERAL, token);
+        token = scanner.next();
+        Assert.assertEquals("first: " + token, JsonScanner.Token.NAME, token);
+        token = scanner.skipNext();
+        //Assert.assertEquals("first: " + token, JsonScanner.Token.ARRAY_START, token);
+        //token = scanner.next();
+        //Assert.assertEquals("first: " + token, JsonScanner.Token.LITERAL, token);
+        //token = scanner.next();
+        //Assert.assertEquals("first: " + token, JsonScanner.Token.LITERAL, token);
+        //Assert.assertEquals("first: " + token, "BMW", scanner.stringValue());
+        //token = scanner.next();
+        //Assert.assertEquals("first: " + token, JsonScanner.Token.LITERAL, token);
+        //token = scanner.next();
+        //Assert.assertEquals("first: " + token, JsonScanner.Token.ARRAY_END, token);
+        //token = scanner.next();
+        Assert.assertEquals("first: " + token, JsonScanner.Token.OBJECT_END, token);
+        token = scanner.next();
+        Assert.assertEquals("first: " + token, JsonScanner.Token.ARRAY_END, token);
+        token = scanner.next();
+        Assert.assertNull("final: " + token, token);
+        
+//        while(token != null) {            
+//            log.info("token " + token);
+//            token = scanner.next();
+//        }
+    }
 }
