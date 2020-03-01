@@ -48,28 +48,42 @@ public class TraversalParser {
             handler.startDocument();
             int c = source.current();
             while(c != -1) {
-                if(c == '{') {
-                    handler.startObject();
-                    source.move();
-                } else if(c == '}') {
-                    handler.endObject();
-                    source.move();
-                } else if(c == '[') {
-                    handler.startArray();
-                    source.move();
-                } else if(c == ']') {
-                    handler.endArray();
-                    source.move();
-                } else if(c == ':') {
-                    handler.nameSeparator();
-                    source.move();
-                } else if(c == ',') {
-                    handler.valueSeparator();
-                    source.move();
-                } else if(isWhiteSpace(c)) {
-                    skipWhiteSpace();
-                } else {
-                    skipLiteral();
+                switch (c) {
+                    case '{':
+                        handler.startObject();
+                        source.move();
+                        break;
+                    case '}':
+                        handler.endObject();
+                        source.move();
+                        break;
+                    case '[':
+                        handler.startArray();
+                        source.move();
+                        break;
+                    case ']':
+                        handler.endArray();
+                        source.move();
+                        break;
+                    case ':':
+                        handler.nameSeparator();
+                        source.move();
+                        break;
+                    case ',':
+                        handler.valueSeparator();
+                        source.move();
+                        break;
+                    case ' ':
+                    case '\n':
+                    case '\t':
+                    case '\r':
+                        skipWhiteSpace(c);
+                        break;
+                    case '"':
+                        skipLiteralEscaped(c);
+                        break;
+                    default: 
+                        skipLiteralSimple(c);
                 }
                 c = source.current();
             }
@@ -90,27 +104,56 @@ public class TraversalParser {
     }
 
     private boolean isWhiteSpace(int c) {
-        if(c == ' ') return true;
-        if(c == '\t') return true;
-        if(c == '\n') return true;
-        return c == '\r';
+        switch (c) {
+            case ' ': return true;
+            case '\t': return true;
+            case '\n': return true;
+            case '\r': return true;
+            default: return false;
+        }
     }
     
     private boolean isNonLiteral(int c) {
-        if(isWhiteSpace(c)) return true;
-        if(c == ':') return true;
-        if(c == ',') return true;
-        if(c == '{') return true;
-        if(c == '}') return true;
-        if(c == '[') return true;
-        if(c == ']') return true;
-        return false;
+        switch (c) {
+            case ':': return true;
+            case ',': return true;
+            case '{': return true;
+            case '}': return true;
+            case '[': return true;
+            case ']': return true;
+            case ' ': return true;
+            case '\t': return true;
+            case '\n': return true;
+            case '\r': return true;
+            default: return false;
+        }
+    }
+
+    private void skipWhiteSpace2(int c) {
+        while((c != -1) && (isWhiteSpace(c))) {
+            source.move();
+            c = source.current();
+        }
     }
     
-    private void skipWhiteSpace() {
+    private void skipWhiteSpace(int c) {
         int startpos = source.startRecording();
-        int c = source.current();
-        while((c != -1) && (isWhiteSpace(c))) {
+        boolean cont = true;
+        mainloop:
+        while(cont) {
+            switch (c) {
+                case -1:
+                    cont = false;
+                    break mainloop;
+                case ' ':
+                case '\n':
+                case '\t':
+                case '\r':
+                    break;
+                default:
+                    cont = false;
+                    break mainloop;
+            }
             source.move();
             c = source.current();
         }
@@ -119,15 +162,13 @@ public class TraversalParser {
         handler.whiteSpace(str, startpos, endpos - startpos);
     }
 
-    private void skipLiteral() {
-        int c = source.current();
-        if(c == '"') skipLiteralEscaped();
-        else skipLiteralSimple();
+    private void skipLiteral(int c) {
+        if(c == '"') skipLiteralEscaped(c);
+        else skipLiteralSimple(c);
     }
 
-    private void skipLiteralSimple() {
+    private void skipLiteralSimple2(int c) {
         int startpos = source.startRecording();
-        int c = source.current();
         while((c != -1) && (!isNonLiteral(c))) {
             source.move();
             c = source.current();
@@ -137,24 +178,55 @@ public class TraversalParser {
         handler.literal(JsonLiteralImpl.instance(str, startpos, endpos-startpos));
     }
     
-    private void skipLiteralEscaped() {
+    private void skipLiteralSimple(int c) {
+        int startpos = source.startRecording();
+        boolean cont = true;
+        mainloop:
+        while(cont) {
+            switch (c) {
+                case -1:
+                    cont = false;
+                    break mainloop;
+                case ':':
+                case ',':
+                case '{':
+                case '}':
+                case '[':
+                case ']':
+                case ' ':
+                case '\n':
+                case '\t':
+                case '\r':
+                    cont = false;
+                    break mainloop;
+                default:
+            }
+            source.move();
+            c = source.current();
+        }
+        int endpos = source.stopRecording();
+        String str = source.recordedContent();
+        handler.literal(JsonLiteralImpl.instance(str, startpos, endpos-startpos));
+    }
+    
+    private void skipLiteralEscaped(int c) {
         int startpos = source.startRecording();
         boolean escape = false;
         source.move();
-        int c = source.current();
+        c = source.current();
+        mainloop:
         while(c != -1) {
             if(escape) {
                 escape = false;
                 //source.move();
             } else {
-                if(c == '\\') {
-                    escape = true;
-                } else {
-                    //escape = false;
-                    if(c == '"') {
+                switch (c) {
+                    case '\\':
+                        escape = true;
+                    case '"':
                         source.move();
-                        break;
-                    }
+                        break mainloop;
+                    default:
                 }
             }
             source.move();

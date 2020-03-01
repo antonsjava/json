@@ -96,39 +96,51 @@ public class JsonScanner {
             isLiteral = false;
             int c = source.current();
             while(c != -1) {
-                if(c == '{') {
-                    stack.push(Container.OBJECT);
-                    namePossible = true;
-                    source.move();
-                    return Token.OBJECT_START;
-                } else if(c == '}') {
-                    stack.pop();
-                    namePossible = false;
-                    source.move();
-                    return Token.OBJECT_END;
-                } else if(c == '[') {
-                    stack.push(Container.ARRAY);
-                    namePossible = false;
-                    source.move();
-                    return Token.ARRAY_START;
-                } else if(c == ']') {
-                    stack.pop();
-                    namePossible = false;
-                    source.move();
-                    return Token.ARRAY_END;
-                } else if(c == ':') {
-                    namePossible = false;
-                    source.move();
-                } else if(c == ',') {
-                    namePossible = stack.peek() == Container.OBJECT;
-                    source.move();
-                } else if(isWhiteSpace(c)) {
-                    skipWhiteSpace();
-                } else {
-                    skipLiteral();
-                    isLiteral = true;
-                    if(namePossible) return Token.NAME;
-                    else return Token.LITERAL;
+                switch (c) {
+                    case '{':
+                        stack.push(Container.OBJECT);
+                        namePossible = true;
+                        source.move();
+                        return Token.OBJECT_START;
+                    case '}':
+                        stack.pop();
+                        namePossible = false;
+                        source.move();
+                        return Token.OBJECT_END;
+                    case '[':
+                        stack.push(Container.ARRAY);
+                        namePossible = false;
+                        source.move();
+                        return Token.ARRAY_START;
+                    case ']':
+                        stack.pop();
+                        namePossible = false;
+                        source.move();
+                        return Token.ARRAY_END;
+                    case ':':
+                        namePossible = false;
+                        source.move();
+                        break;
+                    case ',':
+                        namePossible = stack.peek() == Container.OBJECT;
+                        source.move();
+                        break;
+                    case ' ':
+                    case '\n':
+                    case '\t':
+                    case '\r':
+                        skipWhiteSpace(c);
+                        break;
+                    case '"':
+                        skipLiteralEscaped(c);
+                        isLiteral = true;
+                        if(namePossible) return Token.NAME;
+                        else return Token.LITERAL;
+                    default:
+                        skipLiteralSimple(c);
+                        isLiteral = true;
+                        if(namePossible) return Token.NAME;
+                        else return Token.LITERAL;
                 }
                 c = source.current();
             }
@@ -139,41 +151,88 @@ public class JsonScanner {
     }
 
     private boolean isWhiteSpace(int c) {
-        if(c == ' ') return true;
-        if(c == '\t') return true;
-        if(c == '\n') return true;
-        return c == '\r';
+        switch (c) {
+            case ' ': return true;
+            case '\t': return true;
+            case '\n': return true;
+            case '\r': return true;
+            default: return false;
+        }
     }
     
     private boolean isNonLiteral(int c) {
-        if(isWhiteSpace(c)) return true;
-        if(c == ':') return true;
-        if(c == ',') return true;
-        if(c == '{') return true;
-        if(c == '}') return true;
-        if(c == '[') return true;
-        if(c == ']') return true;
-        return false;
+        switch (c) {
+            case ':': return true;
+            case ',': return true;
+            case '{': return true;
+            case '}': return true;
+            case '[': return true;
+            case ']': return true;
+            case ' ': return true;
+            case '\t': return true;
+            case '\n': return true;
+            case '\r': return true;
+            default: return false;
+        }
     }
     
-    private void skipWhiteSpace() {
-        int c = source.current();
-        while((c != -1) && (isWhiteSpace(c))) {
+//    private void skipWhiteSpace2(int c) {
+//        while((c != -1) && (isWhiteSpace(c))) {
+//            source.move();
+//            c = source.current();
+//        }
+//    }
+
+    private void skipWhiteSpace(int c) {
+        boolean cont = true;
+        mainloop:
+        while(cont) {
+            switch (c) {
+                case -1:
+                    cont = false;
+                    break mainloop;
+                case ' ':
+                case '\n':
+                case '\t':
+                case '\r':
+                    break;
+                default:
+                    cont = false;
+                    break mainloop;
+            }
             source.move();
             c = source.current();
         }
     }
 
-    private void skipLiteral() {
-        int c = source.current();
-        if(c == '"') skipLiteralEscaped();
-        else skipLiteralSimple();
+    private void skipLiteral(int c) {
+        if(c == '"') skipLiteralEscaped(c);
+        else skipLiteralSimple(c);
     }
 
-    private void skipLiteralSimple() {
+    private void skipLiteralSimple(int c) {
         startpos = source.startRecording();
-        int c = source.current();
-        while((c != -1) && (!isNonLiteral(c))) {
+        boolean cont = true;
+        mainloop:
+        while(cont) {
+            switch (c) {
+                case -1:
+                    cont = false;
+                    break mainloop;
+                case ':':
+                case ',':
+                case '{':
+                case '}':
+                case '[':
+                case ']':
+                case ' ':
+                case '\n':
+                case '\t':
+                case '\r':
+                    cont = false;
+                    break mainloop;
+                default:
+            }
             source.move();
             c = source.current();
         }
@@ -181,24 +240,24 @@ public class JsonScanner {
         buff = source.recordedContent();
     }
     
-    private void skipLiteralEscaped() {
+    private void skipLiteralEscaped(int c) {
         startpos = source.startRecording();
         boolean escape = false;
         source.move();
-        int c = source.current();
+        c = source.current();
+        mainloop:
         while(c != -1) {
             if(escape) {
                 escape = false;
                 //source.move();
             } else {
-                if(c == '\\') {
-                    escape = true;
-                } else {
-                    //escape = false;
-                    if(c == '"') {
+                switch (c) {
+                    case '\\':
+                        escape = true;
+                    case '"':
                         source.move();
-                        break;
-                    }
+                        break mainloop;
+                    default:
                 }
             }
             source.move();

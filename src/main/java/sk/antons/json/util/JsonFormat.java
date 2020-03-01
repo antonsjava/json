@@ -119,47 +119,59 @@ public class JsonFormat {
                         }
                     }
                 } else {
-                    if(c == '"') {
-                        if((prevNoSpace == ',') && (prevprevNoSpace == '}')) {
-                            if(indent) {
-                                indent(ind);
+                    switch (c) {
+                        case '"':
+                            if((prevNoSpace == ',') && (prevprevNoSpace == '}')) {
+                                if(indent) {
+                                    indent(ind);
+                                }
                             }
-                        }
-                        inStringLiteral = true;
-                        writer.write(c);
-                    } else if(c == ':') {
-                        if(indent) writer.write(" : ");
-                        else writer.write(c);
-                    } else if(c == ',') {
-                        //if(indent && (prevNoSpace == '}')) writer.write(' ');
-                        writer.write(c);
-                        //if(indent && (prevNoSpace == '}')) writer.write(' ');
-                        if(indent) {
-                            if((prevNoSpace == '}')) {
-                            } else {
-                                indent(ind);
-                            }
-                        }
-                    } else if((c == '{') || (c == '[')) {
-                        writer.write(c);
-                        if(indent) {
-                            ind++;
-                            indent(ind);
-                        }
-                    } else if((c == '}') || (c == ']')) {
-                        if(indent) {
-                            ind--;
-                            indent(ind);
-                        }
-                        writer.write(c);
-                    } else if(isSpace(c)) {
-                        if(noindent) {
-                        } else if(indent) {
-                        } else {
+                            inStringLiteral = true;
                             writer.write(c);
-                        }
-                    } else {
-                        writer.write(c);
+                            break;
+                        case ':':
+                            if(indent) writer.write(" : ");
+                            else writer.write(c);
+                            break;
+                        case ',':
+                            //if(indent && (prevNoSpace == '}')) writer.write(' ');
+                            writer.write(c);
+                            //if(indent && (prevNoSpace == '}')) writer.write(' ');
+                            if(indent) {
+                                if((prevNoSpace == '}')) {
+                                } else {
+                                    indent(ind);
+                                }
+                            }
+                            break;
+                        case '{':
+                        case '[':
+                            writer.write(c);
+                            if(indent) {
+                                ind++;
+                                indent(ind);
+                            }
+                            break;
+                        case '}':
+                        case ']':
+                            if(indent) {
+                                ind--;
+                                indent(ind);
+                            }
+                            writer.write(c);
+                            break;
+                        case ' ':
+                        case '\n':
+                        case '\t':
+                        case '\r':
+                            if(noindent) {
+                            } else if(indent) {
+                            } else {
+                                writer.write(c);
+                            }
+                            break;
+                        default:
+                            writer.write(c);
                     }
                 }
 //            }
@@ -200,12 +212,6 @@ public class JsonFormat {
             case '\t': return true;
             default: return false;
         }
-//        if(c > ' ') return false;
-//        if(c == ' ') return true;
-//        if(c == '\t') return true;
-//        if(c == '\n') return true;
-//        if(c == '\r') return true;
-//        return false;
     }
     
 
