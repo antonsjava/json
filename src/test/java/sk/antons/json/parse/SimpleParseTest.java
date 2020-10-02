@@ -27,6 +27,7 @@ import sk.antons.json.literal.impl.JsonBoolLiteralImpl;
 import sk.antons.json.literal.impl.JsonIntLiteralImpl;
 import sk.antons.json.literal.impl.JsonNullLiteralImpl;
 import sk.antons.json.JsonValue;
+import sk.antons.json.match.SimplePathMatcher;
 
 /**
  *
@@ -94,5 +95,23 @@ public class SimpleParseTest {
         log.info("test result : " + value.toCompactString());
         log.info("test result : " + value.toPrettyString("  "));
         Assert.assertTrue("class: " + value.getClass(), value instanceof JsonArray);
+    }
+
+    @Test
+	public void unicode() throws Exception {
+    	String json = "{\n" +
+"  \"persons\" : [\n" +
+"    {\n" +
+"      \"surname\" : \"Testova\\u010D\",\n" +
+"      \"familyBirthName\" : \"Testova\\u010D\"\n" +
+"    },{\n" +
+"      \"surname\" : \"Testova\\u010Dov\\u00E1\",\n" +
+"      \"familyBirthName\" : \"Nov\\u00E1kov\\u00E1\"\n" +
+"    }\n" +
+"  ]\n" +
+"}";
+        log.info("test : " + json);
+        JsonValue jv = JsonParser.parse(json);
+        Assert.assertEquals("result: ", jv.findFirstLiteral(SimplePathMatcher.instance("persons", "*", "surname")), "Testova\u010D");
     }
 }

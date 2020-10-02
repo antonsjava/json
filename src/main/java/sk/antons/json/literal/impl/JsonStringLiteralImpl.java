@@ -37,8 +37,12 @@ public class JsonStringLiteralImpl extends JsonLiteralImpl implements JsonString
     }
 
     public static JsonStringLiteralImpl fromValue(String value) {
+        return fromValue(value, true);
+    }
+    
+    public static JsonStringLiteralImpl fromValue(String value, boolean escapeNonAscii) {
         if(value == null) value = "null";
-        value = JsonEscaper.escape(value, true);
+        value = JsonEscaper.escape(value, escapeNonAscii);
         return new JsonStringLiteralImpl("\""+value+"\"");
     }
 

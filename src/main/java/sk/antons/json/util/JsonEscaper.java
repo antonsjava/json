@@ -130,7 +130,7 @@ public class JsonEscaper {
             else if(c == '\n') sb.append("\\n");
             else if(c == '\t') sb.append("\\t");
             else if(c == '\r') sb.append("\\r");
-            else if(c == '/') sb.append("\\/");
+            //else if(c == '/') sb.append("\\/");
             else if(c == '\b') sb.append("\\b");
             else if(c == '\f') sb.append("\\f");
             else if(escapeNonAscii && (c > 127)) sb.append(escapeChar(c));

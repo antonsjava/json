@@ -92,6 +92,14 @@ public class JsonFactory {
      * @return new instance of json string literal.
      */
     public static JsonStringLiteral stringLiteral(String value) { return JsonStringLiteralImpl.fromValue(value); }
+    
+    /**
+     * Json string literal instance factory method.
+     * @param value internal value for new literal instance.
+     * @param escapeNonAscii true is non ascii chars must be exaped to \u0000 form
+     * @return new instance of json string literal.
+     */
+   public static JsonStringLiteral stringLiteral(String value, boolean escapeNonAscii) { return JsonStringLiteralImpl.fromValue(value, escapeNonAscii); }
 
     /**
      * Parse string value and return identified literal. (remember that string 

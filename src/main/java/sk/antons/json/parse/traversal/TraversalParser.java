@@ -216,19 +216,15 @@ public class TraversalParser {
         c = source.current();
         mainloop:
         while(c != -1) {
-            if(escape) {
-                escape = false;
-                //source.move();
-            } else {
                 switch (c) {
                     case '\\':
-                        escape = true;
+                        source.move();
+                        break;
                     case '"':
                         source.move();
                         break mainloop;
                     default:
                 }
-            }
             source.move();
             c = source.current();
         }
