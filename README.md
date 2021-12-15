@@ -242,8 +242,8 @@ The result can looks like
 
 ```
    <dependency>
-      <groupId>com.github.antonsjava</groupId>
+      <groupId>io.github.antonsjava</groupId>
       <artifactId>json</artifactId>
-      <version>1.9</version>
+      <version>LATESTVERSION</version>
    </dependency>
 ```
