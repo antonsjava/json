@@ -98,6 +98,7 @@ path, you can find them by calling
   JsonObject o = ...
   JsonValue v = o.findFirst(SimplePathMatcher.instance("menu", "popup", "menuitem", "*", "value"));
   List<JsonValue> list = o.findAll(SimplePathMatcher.instance("menu", "popup", "menuitem", "*", "value"));
+  List<JsonValue> list = o.find("menu", "popup", "menuitem", "*", "value").all();
 ```
 
 Character '\*' stands for any path item. 
@@ -108,6 +109,7 @@ If you search for literal values you can call
   JsonObject o = ...
   Stirng v = o.findFirstLiteral(SimplePathMatcher.instance("menu", "popup", "menuitem", "*", "value"));
   List<String> list = o.findAllLiterals(SimplePathMatcher.instance("menu", "popup", "menuitem", "*", "value"));
+  List<String> list = o.find("menu", "popup", "menuitem", "*", "value").allLiterals();
 ```
 
 If you search for literal from big structure and you don;t want to parse if first.

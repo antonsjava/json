@@ -20,6 +20,7 @@ import java.util.List;
 import sk.antons.json.JsonArray;
 import sk.antons.json.JsonObject;
 import sk.antons.json.JsonValue;
+import sk.antons.json.find.PathFinder;
 import sk.antons.json.literal.JsonBoolLiteral;
 import sk.antons.json.literal.JsonExpLiteral;
 import sk.antons.json.literal.JsonFracLiteral;
@@ -265,4 +266,16 @@ public abstract class JsonValueImpl implements JsonValue, JsonMember {
         }
         return null;
     }
+
+    @Override
+    public PathFinder find(PathMatcher matcher) {
+        return PathFinder.of(this, matcher);
+    }
+
+    @Override
+    public PathFinder find(String... path) {
+        return PathFinder.of(this, path);
+    }
+
+    
 }

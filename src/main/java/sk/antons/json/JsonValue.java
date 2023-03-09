@@ -16,6 +16,7 @@
 package sk.antons.json;
 
 import java.util.List;
+import sk.antons.json.find.PathFinder;
 import sk.antons.json.literal.JsonBoolLiteral;
 import sk.antons.json.literal.JsonExpLiteral;
 import sk.antons.json.literal.JsonFracLiteral;
@@ -152,6 +153,20 @@ public interface JsonValue {
      * @return result of the check
      */
     boolean isLiteral();
+    
+    /**
+     * Finder for specified matcher.
+     * @param matcher Matcher to used for identifying returned values.
+     * @return helper class instance.
+     */
+    PathFinder find(PathMatcher matcher);
+    
+    /**
+     * Finder for specified path. (SimplePathMather is used)
+     * @param path path used for identifying returned values
+     * @return helper class instance.
+     */
+    PathFinder find(String... path);
 
     /**
      * Find all json values with defined path
