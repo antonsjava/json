@@ -26,7 +26,7 @@ import sk.antons.json.JsonValue;
  * 
  * Single asterix and question mark can be used for substrings in path element.
  * 
- * ["items-*", "**", "name"] can match paths in length >=2 starting with items-<something> 
+ * [&quot;items-*&quot;, &quot;**&quot;, &quot;name&quot;] can match paths in length &gt;=2 starting with items-&lt;something&gt; 
  * and ending with name. ( /items-12/foo/bar/name)
  * 
  * @author antons
