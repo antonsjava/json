@@ -50,7 +50,7 @@ or
   JsonValue value = JsonParser.parse(jsonvalue);
 ```
 
-## Json parsing to tree 
+## Json parsing to stream 
 
   You can traverse json tree and produces stream of json values 
   
@@ -58,7 +58,7 @@ or
   json sub tree at once.
  
   Imagine you have jsom like 
-~~~  
+```
   { "items" : [
  		{"name": "name-1", "value": 1},
  		{"name": "name-2", "value": 2},
@@ -67,23 +67,23 @@ or
  		...
   ]
   }
-~~~  
+```
   So you can parse whole json and iterate parts. In this case whole 
   json is loaded before traversal. (It is effective for small jsons 
   only)
-~~~  
+```java
     JsonValue root = JsonParser.parse(inputstream);
     root.find(SPM.path("items", "*")).stream()
     // or if you want traverse only values
     // root.find(SPM.path("items", "*", "value")).stream()
-~~~  
+```
   This class allows you to read only parts you want. But it is little 
   bit slower.
-~~~  
+```java
     JsonStream.instance(inputstream, SPM.path("items", "*")).stream();
     // or if you want traverse only values
     // JsonStream.instance(inputstream, SPM.path("items", "*", "value")).stream();
-~~~  
+```
   So if you have pretty big json which is json array and you are goinig to 
   process it item by item, you can use JsonStream with path "*".  
 
