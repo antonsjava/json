@@ -64,7 +64,7 @@ public class PathFinder {
      * Find all json values with defined path
      * @return all json values defined by path matcher
      */
-    List<JsonValue> all() {
+    public List<JsonValue> all() {
         return root.findAll(matcher);
     }
     

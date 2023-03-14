@@ -15,8 +15,11 @@
  */
 package sk.antons.json.parse;
 
+import com.sun.management.HotSpotDiagnosticMXBean;
 import java.io.FileReader;
+import java.io.IOException;
 import java.io.Reader;
+import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -24,6 +27,7 @@ import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
+import javax.management.MBeanServer;
 import sk.antons.json.JsonValue;
 import sk.antons.json.match.Match;
 import sk.antons.json.match.PathMatcher;
@@ -186,7 +190,6 @@ public class JsonStream {
                 if(context.array) {
                     Match match = matcher.match(path, null);
                     if(match == Match.FULLY) {
-                        System.out.println(" ---- " + path);
                         JsonValue v = scanner.readNext();
                         if(v == null) {
                             context = context.prev;
@@ -207,14 +210,12 @@ public class JsonStream {
                     path.add(String.valueOf(context.arrayCounter++));
                     Match match = matcher.match(path, null);
                     if(match == Match.FULLY) {
-                        System.out.println(" ---- " + path);
                         return scanner.readNext();
                     }
                 } else if(token == Token.NAME) {
                     path.add(scanner.stringValue());
                     Match match = matcher.match(path, null);
                     if(match == Match.FULLY) {
-                        System.out.println(" ---- " + path);
                         return scanner.readNext();
                     }
                 } else if(token == Token.OBJECT_END) {
@@ -248,6 +249,7 @@ public class JsonStream {
         }
     }
 
+
     public static void main(String[] argv) throws Exception {
         Reader reader = new FileReader("/home/antons/Downloads/sample.json");
         JsonStream stream = JsonStream.instance(reader, SPM.path("web-app", "servlet", "*", "servlet-name"));
@@ -257,5 +259,6 @@ public class JsonStream {
             JsonValue next = iter.next();
             System.out.println(" ----====----- " + next.toCompactString());
         }
+
     }
 }
