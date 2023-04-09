@@ -29,32 +29,42 @@ import sk.antons.json.template.JsonArrayListWrapper;
  */
 public class JsonArrayImpl extends JsonValueImpl implements JsonArray, JsonGroup, JsonMember {
     private List<JsonValue> values = new ArrayList<JsonValue>();
-    
+
     public List<JsonValue> values() { return values; }
 
     @Override
-    public void toCompactString(StringBuilder sb) {
-        sb.append('[');
-        boolean first = true;
-        for(JsonValue value : values) {
-            if(first) first = false;
-            else sb.append(',');
-            ((JsonValueImpl)value).toCompactString(sb);
+    protected void toCompactString(Appendable sb) {
+        try {
+            sb.append('[');
+            boolean first = true;
+            for(JsonValue value : values) {
+                if(first) first = false;
+                else sb.append(',');
+                ((JsonValueImpl)value).toCompactString(sb);
+            }
+            sb.append(']');
+        } catch(Exception e) {
+            if(e instanceof RuntimeException) throw (RuntimeException)e;
+            throw new IllegalStateException(e);
         }
-        sb.append(']');
     }
 
     @Override
-    public void toPrettyString(StringBuilder sb, String prefix, String indent) {
-        sb.append("[\n").append(prefix).append(indent);
-        boolean first = true;
-        for(JsonValue value : values) {
-            if(first) first = false;
-            else sb.append(",");
-            ((JsonValueImpl)value).toPrettyString(sb, prefix + indent , indent);
+    protected void toPrettyString(Appendable sb, String prefix, String indent) {
+        try {
+            sb.append("[\n").append(prefix).append(indent);
+            boolean first = true;
+            for(JsonValue value : values) {
+                if(first) first = false;
+                else sb.append(",");
+                ((JsonValueImpl)value).toPrettyString(sb, prefix + indent , indent);
+            }
+            sb.append("\n");
+            sb.append(prefix).append(']');
+        } catch(Exception e) {
+            if(e instanceof RuntimeException) throw (RuntimeException)e;
+            throw new IllegalStateException(e);
         }
-        sb.append("\n");
-        sb.append(prefix).append(']');
     }
 
     @Override
@@ -94,7 +104,7 @@ public class JsonArrayImpl extends JsonValueImpl implements JsonArray, JsonGroup
         return values.get(values.size()-1);
     }
 
-    
+
 
     @Override
     public JsonArray add(JsonValue value) {
@@ -112,7 +122,7 @@ public class JsonArrayImpl extends JsonValueImpl implements JsonArray, JsonGroup
         return this;
     }
 
-    
+
 
     @Override
     public List<JsonValue> toList() {
@@ -129,7 +139,7 @@ public class JsonArrayImpl extends JsonValueImpl implements JsonArray, JsonGroup
         return values.indexOf(m);
     }
 
-    
+
     @Override
     public JsonValue findFirst(PathMatcher matcher, List<String> path) {
         Match result = matcher.match(path, this);
@@ -164,7 +174,7 @@ public class JsonArrayImpl extends JsonValueImpl implements JsonArray, JsonGroup
             path.remove(path.size()-1);
         }
     }
-    
+
     public void remove(JsonValue value) {
         if(value == null) return;
         values.remove(value);

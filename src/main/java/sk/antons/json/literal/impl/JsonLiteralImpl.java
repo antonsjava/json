@@ -43,7 +43,7 @@ public abstract class JsonLiteralImpl extends JsonValueImpl implements JsonLiter
         this.offset = 0;
         this.length = literal.length();
     }
-    
+
     protected JsonLiteralImpl(String literal, int offset, int length) {
         if(literal == null) literal = "null";
         this.literal = literal;
@@ -65,7 +65,7 @@ public abstract class JsonLiteralImpl extends JsonValueImpl implements JsonLiter
         cachedValue = true;
         return cachedValueString;
     }
-    
+
 
     private static JsonLiteralImpl parse(String literal) {
         if(literal == null) return new JsonNullLiteralImpl();
@@ -80,7 +80,7 @@ public abstract class JsonLiteralImpl extends JsonValueImpl implements JsonLiter
         }
         return true;
     }
-    
+
     private static final char[] NULL = new char[]{'n', 'u', 'l', 'l'};
     private static final char[] TRUE = new char[]{'t', 'r', 'u', 'e'};
     private static final char[] FALSE = new char[]{'f', 'a', 'l', 's', 'e'};
@@ -100,7 +100,7 @@ public abstract class JsonLiteralImpl extends JsonValueImpl implements JsonLiter
             int dotPos = -1;
             for(int i = offset; i < literalLen; i++) {
                 char c = literal.charAt(i);
-                
+
                 if(('0' <= c) && ('9' >= c)) { //OK
                 } else if(('-' == c) || ('+' == c)) {
                     if((i != offset) && (i != ePos+1)) {
@@ -128,7 +128,7 @@ public abstract class JsonLiteralImpl extends JsonValueImpl implements JsonLiter
         }
         return value;
     }
-    
+
     private static void parseEx(String note, String literal, int offset, int length) {
         throw new IllegalArgumentException("JSValue '"+literal.substring(offset, offset + length)+"' " + note);
     }
@@ -144,13 +144,23 @@ public abstract class JsonLiteralImpl extends JsonValueImpl implements JsonLiter
     }
 
     @Override
-    public void toCompactString(StringBuilder sb) {
-        sb.append(literal());
+    protected void toCompactString(Appendable sb) {
+        try {
+            sb.append(literal());
+        } catch(Exception e) {
+            if(e instanceof RuntimeException) throw (RuntimeException)e;
+            throw new IllegalStateException(e);
+        }
     }
 
     @Override
-    public void toPrettyString(StringBuilder sb, String prefix, String indent) {
-        sb.append(literal());
+    protected void toPrettyString(Appendable sb, String prefix, String indent) {
+        try {
+            sb.append(literal());
+        } catch(Exception e) {
+            if(e instanceof RuntimeException) throw (RuntimeException)e;
+            throw new IllegalStateException(e);
+        }
     }
 
     @Override
@@ -177,5 +187,5 @@ public abstract class JsonLiteralImpl extends JsonValueImpl implements JsonLiter
     }
 
 
-    
+
 }

@@ -15,11 +15,8 @@
  */
 package sk.antons.json.parse;
 
-import com.sun.management.HotSpotDiagnosticMXBean;
 import java.io.FileReader;
-import java.io.IOException;
 import java.io.Reader;
-import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -27,7 +24,6 @@ import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
-import javax.management.MBeanServer;
 import sk.antons.json.JsonValue;
 import sk.antons.json.match.Match;
 import sk.antons.json.match.PathMatcher;
@@ -38,13 +34,13 @@ import sk.antons.json.source.ReaderSource;
 import sk.antons.json.source.StringSource;
 
 /**
- * Json parer, which traverse json tree and produces stream of json values 
- * according to given path matcher. 
- * 
- * Useful, when you have big json and you want to extract only small json 
+ * Json parer, which traverse json tree and produces stream of json values
+ * according to given path matcher.
+ *
+ * Useful, when you have big json and you want to extract only small json
  * sub tree at once.
  *
- * Imagine you have jsom like 
+ * Imagine you have jsom like
  * &lt;pre&gt;
  * { &quot;items&quot; : [
  *		{&quot;name&quot;: &quot;name-1&quot;, &quot;value&quot;: 1},
@@ -55,8 +51,8 @@ import sk.antons.json.source.StringSource;
  * ]
  * }
  * &lt;/pre&gt;
- * So you can parse whole json and iterate parts. In this case whole 
- * json is loaded before traversal. (It is effective for small jsons 
+ * So you can parse whole json and iterate parts. In this case whole
+ * json is loaded before traversal. (It is effective for small jsons
  * only)
  * &lt;pre&gt;
  *   JsonValue root = JsonParser.parse(inputstream);
@@ -64,7 +60,7 @@ import sk.antons.json.source.StringSource;
  *   // or if you want traverse only values
  *   // root.find(SPM.path(&quot;items&quot;, &quot;*&quot;, &quot;value&quot;)).stream()
  * &lt;/pre&gt;
- * This class allows you to read only parts you want. But it is little 
+ * This class allows you to read only parts you want. But it is little
  * bit slower.
  * &lt;pre&gt;
  *   JsonStream.instance(inputstream, SPM.path(&quot;items&quot;, &quot;*&quot;)).stream();
@@ -72,8 +68,8 @@ import sk.antons.json.source.StringSource;
  *   // JsonStream.instance(inputstream, SPM.path(&quot;items&quot;, &quot;*&quot;, &quot;value&quot;)).stream();
  * &lt;/pre&gt;
  *
- * So if you have pretty big json which is json array and you are gounig to 
- * process it item by item, you can use JsonStream with path &quot;*&quot;.  
+ * So if you have pretty big json which is json array and you are gounig to
+ * process it item by item, you can use JsonStream with path &quot;*&quot;.
  * @author antons
  */
 public class JsonStream {
@@ -100,7 +96,7 @@ public class JsonStream {
     public static JsonStream instance(JsonSource source, PathMatcher matcher) {
         return new JsonStream(source, matcher);
     }
-    
+
     /**
      * Instance of JsonStream.
      * @param json string with json
@@ -110,7 +106,7 @@ public class JsonStream {
     public static JsonStream instance(String json, PathMatcher matcher) {
         return new JsonStream(new StringSource(json), matcher);
     }
-    
+
     /**
      * Instance of JsonStream.
      * @param reader source for reading json
@@ -122,7 +118,7 @@ public class JsonStream {
     }
 
     /**
-     * Creates iterator for json subparts identifies by given matcher. After 
+     * Creates iterator for json subparts identifies by given matcher. After
      * calling the method JsonStream instance is not valid anymore.
      * @return iterator
      */
@@ -131,20 +127,20 @@ public class JsonStream {
     }
 
     /**
-     * Creates stream of json subparts identifies by given matcher. After 
+     * Creates stream of json subparts identifies by given matcher. After
      * calling the method JsonStream instance is not valid anymore.
      * @return stream
      */
     public Stream<JsonValue> stream() {
-    
+
         return StreamSupport.stream(
             Spliterators.spliteratorUnknownSize(
                 iterator()
                 , Spliterator.IMMUTABLE
             ), false);
-    
+
     }
-    
+
     private static class Context {
         boolean array = false;
         int arrayCounter = 0;
@@ -166,11 +162,11 @@ public class JsonStream {
 
     private class JsonIterator implements Iterator<JsonValue> {
         JsonScanner scanner;
-        
+
         public JsonIterator(JsonScanner scanner) {
             this.scanner = scanner;
         }
-        
+
         List<String> path = new ArrayList<>();
         Context context = null;
         boolean finished = false;
@@ -183,7 +179,7 @@ public class JsonStream {
                 if(path.size()>0) path.remove(path.size()-1);
             }
         }
-        
+
         private JsonValue nextPath() {
             if(context != null) {
                 fixPathAfterItemEnd();
@@ -202,7 +198,7 @@ public class JsonStream {
             }
             Token token = scanner.next();
             if(token == null) return null;
-            while(token != null) {            
+            while(token != null) {
                 if(token == Token.OBJECT_START) {
                     context = Context.object(context);
                 } else if(token == Token.ARRAY_START) {
@@ -231,7 +227,7 @@ public class JsonStream {
             }
             return null;
         }
-    
+
 
         private JsonValue nextone = null;
         @Override
@@ -253,7 +249,7 @@ public class JsonStream {
     public static void main(String[] argv) throws Exception {
         Reader reader = new FileReader("/home/antons/Downloads/sample.json");
         JsonStream stream = JsonStream.instance(reader, SPM.path("web-app", "servlet", "*", "servlet-name"));
-        
+
         Iterator<JsonValue> iter = stream.iterator();
         while(iter.hasNext()) {
             JsonValue next = iter.next();

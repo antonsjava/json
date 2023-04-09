@@ -33,38 +33,48 @@ import sk.antons.json.template.JsonObjectMapWrapper;
 public class JsonObjectImpl extends JsonValueImpl implements JsonObject, JsonGroup, JsonMember {
 
     private List<JsonAttributeImpl> attrs = new ArrayList<JsonAttributeImpl>();
-    
+
     public List<JsonAttributeImpl> attrs() { return attrs; }
 
 
     @Override
-    public void toCompactString(StringBuilder sb) {
-        sb.append('{');
-        boolean first = true;
-        for(JsonAttributeImpl attr : attrs) {
-            if(first) first = false;
-            else sb.append(',');
-            sb.append(attr.name().literal());
-            sb.append(":");
-            ((JsonValueImpl)attr.value()).toCompactString(sb);
+    protected void toCompactString(Appendable sb) {
+        try {
+            sb.append('{');
+            boolean first = true;
+            for(JsonAttributeImpl attr : attrs) {
+                if(first) first = false;
+                else sb.append(',');
+                sb.append(attr.name().literal());
+                sb.append(":");
+                ((JsonValueImpl)attr.value()).toCompactString(sb);
+            }
+            sb.append('}');
+        } catch(Exception e) {
+            if(e instanceof RuntimeException) throw (RuntimeException)e;
+            throw new IllegalStateException(e);
         }
-        sb.append('}');
     }
 
     @Override
-    public void toPrettyString(StringBuilder sb, String prefix, String indent) {
-        sb.append("{\n");
-        boolean first = true;
-        for(JsonAttributeImpl attr : attrs) {
-            if(first) first = false;
-            else sb.append(",\n");
-            sb.append(prefix).append(indent);
-            attr.name().toCompactString(sb);
-            sb.append(" : ");
-            ((JsonValueImpl)attr.value()).toPrettyString(sb, prefix + indent, indent);
+    protected void toPrettyString(Appendable sb, String prefix, String indent) {
+        try {
+            sb.append("{\n");
+            boolean first = true;
+            for(JsonAttributeImpl attr : attrs) {
+                if(first) first = false;
+                else sb.append(",\n");
+                sb.append(prefix).append(indent);
+                attr.name().writeCompact(sb);
+                sb.append(" : ");
+                ((JsonValueImpl)attr.value()).toPrettyString(sb, prefix + indent, indent);
+            }
+            sb.append("\n");
+            sb.append(prefix).append("}");
+        } catch(Exception e) {
+            if(e instanceof RuntimeException) throw (RuntimeException)e;
+            throw new IllegalStateException(e);
         }
-        sb.append("\n");
-        sb.append(prefix).append("}");
     }
 
     @Override
@@ -99,7 +109,7 @@ public class JsonObjectImpl extends JsonValueImpl implements JsonObject, JsonGro
         return attrs.get(attrs.size()-1).value();
     }
 
-    
+
 
     @Override
     public JsonAttribute removeAttr(int index) {
@@ -112,7 +122,7 @@ public class JsonObjectImpl extends JsonValueImpl implements JsonObject, JsonGro
         list.addAll(attrs);
         return list;
     }
-    
+
     private int findIndex(String name) {
         if(attrs.isEmpty()) return -1;
         int size = attrs.size();
@@ -199,7 +209,7 @@ public class JsonObjectImpl extends JsonValueImpl implements JsonObject, JsonGro
     }
 
 
-    
+
     @Override
     public JsonValue findFirst(PathMatcher matcher, List<String> path) {
         Match result = matcher.match(path, this);
@@ -289,5 +299,5 @@ public class JsonObjectImpl extends JsonValueImpl implements JsonObject, JsonGro
     public Object asTemplateParam() {
         return JsonObjectMapWrapper.instance(this);
     }
-    
+
 }

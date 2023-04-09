@@ -15,6 +15,7 @@
  */
 package sk.antons.json.parse;
 
+import java.io.BufferedReader;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,22 +43,45 @@ public class JsonParser {
 
     /**
      * Parse json from string.
-     * @param json string with json obejct array of just literal.
+     * @param json string with json object array of just literal.
      * @return Json value representing the json data.
      */
     public static JsonValue parse(String json) {
         return parse(StringSource.instance(json));
     }
-    
+
     /**
      * Parse json from reader.
-     * @param json reader with json obejct array of just literal.
+     * @param json reader with json object array of just literal.
      * @return Json value representing the json data.
      */
     public static JsonValue parse(Reader json) {
         return parse(ReaderSource.instance(json));
     }
-    
+
+    /**
+     * Parse json from reader. But first it reads as String and than parse it as string.
+     * It is faster for small jsnons.
+     * @param json reader with json object array of just literal.
+     * @return Json value representing the json data.
+     */
+    public static JsonValue parsePrefetched(Reader json) {
+        try {
+            if(!(json instanceof BufferedReader)) json = new BufferedReader(json);
+            StringBuilder buffer = new StringBuilder();
+            char[] arr = new char[2048];
+            int numCharsRead;
+            while ((numCharsRead = json.read(arr, 0, arr.length)) != -1) {
+                buffer.append(arr, 0, numCharsRead);
+            }
+            json.close();
+            String targetString = buffer.toString();
+            return parse(StringSource.instance(targetString));
+        } catch(Exception e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
     /**
      * Parse json from source.
      * @param source json source data.
@@ -88,12 +112,12 @@ public class JsonParser {
     }
 
     private static class Handler implements JsonContentHandler {
-        
+
         private Object current = null;
         private Step lastStep = null;
 
         public JsonValue getValue() { return (JsonValue)current; }
-        
+
         private int expected = 0;
         private int deprecated = 0;
 
@@ -139,11 +163,11 @@ public class JsonParser {
                 if((deprecated & step.bit) != 0) parseEx("Element " + step + " was not depricated at this position");
             }
         }
-        
+
         private void parseEx(String note) {
             throw new IllegalArgumentException("Unable to parse source because of: " + note );
         }
-        
+
         @Override
         public void startDocument() {
             expects(Step.START_DOCUMENT);
@@ -178,10 +202,10 @@ public class JsonParser {
             }
             current = array;
             lastStep = Step.START_ARRAY;
-            expected = Step.LITERAL.bit 
-                | Step.START_ARRAY.bit 
-                | Step.START_OBJECT.bit 
-                | Step.END_DOCUMENT.bit 
+            expected = Step.LITERAL.bit
+                | Step.START_ARRAY.bit
+                | Step.START_OBJECT.bit
+                | Step.END_DOCUMENT.bit
                 | Step.END_ARRAY.bit;
         }
 
@@ -254,18 +278,18 @@ public class JsonParser {
         public void valueSeparator() {
             expects(Step.VALUE_SEPARATOR);
             lastStep = Step.VALUE_SEPARATOR;
-            expected = Step.LITERAL.bit 
-                | Step.START_ARRAY.bit 
-                | Step.START_OBJECT.bit; 
+            expected = Step.LITERAL.bit
+                | Step.START_ARRAY.bit
+                | Step.START_OBJECT.bit;
         }
 
         @Override
         public void nameSeparator() {
             expects(Step.NAME_SEPARATOR);
             lastStep = Step.NAME_SEPARATOR;
-            expected = Step.LITERAL.bit 
-                | Step.START_ARRAY.bit 
-                | Step.START_OBJECT.bit; 
+            expected = Step.LITERAL.bit
+                | Step.START_ARRAY.bit
+                | Step.START_OBJECT.bit;
         }
 
         @Override
@@ -306,8 +330,8 @@ public class JsonParser {
             return path();
         }
 
-        
-        
+
+
     }
-    
+
 }

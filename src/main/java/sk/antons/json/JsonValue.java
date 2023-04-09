@@ -28,17 +28,30 @@ import sk.antons.json.match.PathMatcher;
 
 /**
  * Generic json value. Represents all object, arrays and literals.
- * 
+ *
  * @author antons
  */
 public interface JsonValue {
-    
+
+    /**
+     * Produces compact string representation of this json value.
+     * @param appendable place where json string will be written.
+     */
+    void writeCompact(Appendable appendable);
+
     /**
      * Produces compact string representation of this json value.
      * @return compact string value
      */
     String toCompactString();
-    
+
+    /**
+     * Produces pretty (readable) string representation of this json value.
+     * @param appendable place where json string will be written.
+     * @param indent string used for indend nested levels. (ussually tab or some spaces)
+     */
+    void writePretty(Appendable appendable, String indent);
+
     /**
      * Produces pretty (readable) string representation of this json value.
      * @param indent string used for indend nested levels. (ussually tab or some spaces)
@@ -57,43 +70,43 @@ public interface JsonValue {
      * @return this value instance bud narrow casted to JsonArray.
      */
     JsonArray asArray();
-    
+
     /**
      * Cast this value instance to JsonNullLiteral
      * @return this value instance bud narrow casted to JsonNullLiteral.
      */
     JsonNullLiteral asNullLiteral();
-    
+
     /**
      * Cast this value instance to JsonBoolLiteral
      * @return this value instance bud narrow casted to JsonBoolLiteral.
      */
     JsonBoolLiteral asBoolLiteral();
-    
+
     /**
      * Cast this value instance to JsonExpLiteralImpl
      * @return this value instance bud narrow casted to JsonExpLiteral.
      */
     JsonExpLiteral asExpLiteral();
-    
+
     /**
      * Cast this value instance to JsonFracLiteral
      * @return this value instance bud narrow casted to JsonFracLiteral.
      */
     JsonFracLiteral asFracLiteral();
-    
+
     /**
      * Cast this value instance to JsonIntLiteral
      * @return this value instance bud narrow casted to JsonIntLiteral.
      */
     JsonIntLiteral asIntLiteral();
-    
+
     /**
      * Cast this value instance to JsonStringLiteral
      * @return this value instance bud narrow casted to JsonStringLiteral.
      */
     JsonStringLiteral asStringLiteral();
-    
+
     /**
      * Cast this value instance to JsonLiteral
      * @return this value instance bud narrow casted to JsonLiteral.
@@ -153,14 +166,14 @@ public interface JsonValue {
      * @return result of the check
      */
     boolean isLiteral();
-    
+
     /**
      * Finder for specified matcher.
      * @param matcher Matcher to used for identifying returned values.
      * @return helper class instance.
      */
     PathFinder find(PathMatcher matcher);
-    
+
     /**
      * Finder for specified path. (SimplePathMather is used)
      * @param path path used for identifying returned values
@@ -174,7 +187,7 @@ public interface JsonValue {
      * @return all json values defined by path
      */
     List<JsonValue> findAll(PathMatcher matcher);
-    
+
     /**
      * Find first json value with defined path
      * @param matcher Matcher to used for identifying returned value.
@@ -188,14 +201,14 @@ public interface JsonValue {
      * @return all json value defined by path converted to string
      */
     List<String> findAllLiterals(PathMatcher matcher);
-    
+
     /**
      * Find first json value with defined path and converts it to string value
      * @param matcher Matcher to used for identifying returned value.
      * @return first json value defined by path converted to string
      */
     String findFirstLiteral(PathMatcher matcher);
-    
+
     /**
      * Parent of this value in json structure
      * @return parent json value or null if this instance is root
@@ -213,7 +226,7 @@ public interface JsonValue {
      * @return path of this instance
      */
     String[] path();
-    
+
     /**
      * Returns path of this value in json structure
      * @return path of this instance
@@ -240,13 +253,13 @@ public interface JsonValue {
      * @return true if parent is parent of this.
      */
     boolean isDescendantOf(JsonValue parent);
-    
+
     /**
      * Makes deep copy of this value.
      * @return copy of this
      */
     JsonValue copy();
-    
+
     /**
      * Returns name of the instance derived from parent.
      * @return name of value in json tree or null if it is root.
@@ -255,11 +268,11 @@ public interface JsonValue {
 
     /**
      * Converts value to value usable for some template frameworks.
-     * 
+     *
      *  - JsonObjects is converted to read only Map
      *  - JsonArray is converted to read only List
      *  - JsonLiteral is converted to its java value
-     * 
+     *
      * @return template parameter form of this value
      */
     Object asTemplateParam();

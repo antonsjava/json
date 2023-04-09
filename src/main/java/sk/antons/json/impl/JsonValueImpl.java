@@ -35,7 +35,7 @@ import sk.antons.json.match.PathMatcher;
  * @author antons
  */
 public abstract class JsonValueImpl implements JsonValue, JsonMember {
-    
+
     protected JsonGroup group = null;
     @Override
     public JsonGroup group() { return group; }
@@ -44,7 +44,7 @@ public abstract class JsonValueImpl implements JsonValue, JsonMember {
 
     @Override public JsonObject asObject() { return (JsonObject)this; }
     @Override public JsonArray asArray() { return (JsonArray)this; }
-    
+
     @Override public JsonNullLiteral asNullLiteral() { return (JsonNullLiteral)this; }
     @Override public JsonBoolLiteral asBoolLiteral() { return (JsonBoolLiteral)this; }
     @Override public JsonExpLiteral asExpLiteral() { return (JsonExpLiteral)this; }
@@ -52,10 +52,10 @@ public abstract class JsonValueImpl implements JsonValue, JsonMember {
     @Override public JsonIntLiteral asIntLiteral() { return (JsonIntLiteral)this; }
     @Override public JsonStringLiteral asStringLiteral() { return (JsonStringLiteral)this; }
     @Override public JsonLiteral asLiteral() { return (JsonLiteral)this; }
-    
+
     @Override public boolean isObject() { return this instanceof JsonObject; }
     @Override public boolean isArray() { return this instanceof JsonArray; }
-    
+
     @Override public boolean isNullLiteral() { return this instanceof JsonNullLiteral; }
     @Override public boolean isBoolLiteral() { return this instanceof JsonBoolLiteral; }
     @Override public boolean isExpLiteral() { return this instanceof JsonExpLiteral; }
@@ -78,8 +78,19 @@ public abstract class JsonValueImpl implements JsonValue, JsonMember {
         return sb.toString();
     }
 
-    public abstract void toCompactString(StringBuilder sb);
-    public abstract void toPrettyString(StringBuilder sb, String prefix, String indent);
+    @Override
+    public void writeCompact(Appendable appendable) {
+        toCompactString(appendable);
+    }
+
+    @Override
+    public void writePretty(Appendable appendable, String indent) {
+        toPrettyString(appendable, "", indent);
+    }
+
+
+    protected abstract void toCompactString(Appendable sb);
+    protected abstract void toPrettyString(Appendable sb, String prefix, String indent);
 
     @Override
     public List<JsonValue> findAll(PathMatcher matcher) {
@@ -119,8 +130,8 @@ public abstract class JsonValueImpl implements JsonValue, JsonMember {
         return null;
     }
 
-    
-    
+
+
     public abstract JsonValue findFirst(PathMatcher matcher, List<String> path);
     public abstract void findAll(PathMatcher matcher, List<JsonValue> values, List<String> path);
 
@@ -188,7 +199,7 @@ public abstract class JsonValueImpl implements JsonValue, JsonMember {
                 }
             }
         }
-        String[] rv = new String[list.size()]; 
+        String[] rv = new String[list.size()];
         for(int i = 0; i < rv.length; i++) {
             rv[i] = list.get(rv.length-1-i);
         }
@@ -207,7 +218,7 @@ public abstract class JsonValueImpl implements JsonValue, JsonMember {
         return sb.toString();
     }
 
-    
+
 
     @Override
     public boolean isDescendantOf(JsonValue parent) {
@@ -226,7 +237,7 @@ public abstract class JsonValueImpl implements JsonValue, JsonMember {
     }
 
 
- 
+
     @Override
     public void remove() {
         if(group == null) return;
@@ -244,7 +255,7 @@ public abstract class JsonValueImpl implements JsonValue, JsonMember {
         else {}
         setGroup(null);
     }
-        
+
     @Override
     public String name() {
         JsonMember m = null;
@@ -277,5 +288,5 @@ public abstract class JsonValueImpl implements JsonValue, JsonMember {
         return PathFinder.of(this, path);
     }
 
-    
+
 }
