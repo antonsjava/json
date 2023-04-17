@@ -21,28 +21,27 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Convert json in unparsed form. It requires correct json to produce 
+ * Convert json in unparsed form. It requires correct json to produce
  * correct output.
  * @author antons
  */
 public class JsonFormat {
-    
+
     private Reader reader = null;
     private Writer writer = null;
     private boolean noindent = false;
     private boolean indent = false;
     private boolean cut = false;
-    private char indentChar = ' ';
-    private int indentNum = 2;
+    private String indenttext = null;
     private int cutLength = 1;
 
-    
+
     private JsonFormat(Reader reader) { this.reader = reader; }
 
     public static JsonFormat from(String json) {
         return new JsonFormat(new StringReader(json));
     }
-    
+
     public static JsonFormat from(java.io.Reader json) {
         return new JsonFormat(new ReaderReader(json));
     }
@@ -50,21 +49,28 @@ public class JsonFormat {
     public JsonFormat noindent() {
         if(indent) throw new IllegalStateException("Indendation was setup already.");
         noindent = true;
-        return this;    
+        return this;
     }
-    
+
     public JsonFormat indent(int num, char c) {
         if(noindent) throw new IllegalStateException("No indendation was setup already.");
         indent = true;
-        indentNum = num;
-        indentChar = c;
-        return this;    
+        indenttext = "";
+        for(int i = 0; i < num; i++) indenttext = indenttext + c;
+        return this;
     }
-    
+    public JsonFormat indent(String textToIndent) {
+        if(noindent) throw new IllegalStateException("No indendation was setup already.");
+        indent = true;
+        if(textToIndent == null) textToIndent = " ";
+        this.indenttext = textToIndent;
+        return this;
+    }
+
     public JsonFormat cutStringLiterals(int num) {
         cut = true;
         cutLength = num;
-        return this;    
+        return this;
     }
 
     public String toText() {
@@ -76,7 +82,7 @@ public class JsonFormat {
         this.writer.flush();
         return this.writer.result();
     }
-    
+
     public void toWriter(java.io.Writer w) {
         this.writer = new WriterWriter(w);
         process();
@@ -182,19 +188,17 @@ public class JsonFormat {
             }
         }
     }
-    
+
 
     private List<String> indents = new ArrayList<String>();
-    
+
     private void indent(int ind) {
         if(indents.size() <= ind ) {
             StringBuilder sb = new StringBuilder();
             sb.append('\n');
             for(int i = 0; i <= ind; i++) {
                 if(i >= indents.size()) indents.add(sb.toString());
-                for(int j = 0; j < indentNum; j++) {
-                    sb.append(indentChar);
-                }
+                sb.append(indenttext);
             }
         }
         writer.write(indents.get(ind));
@@ -213,7 +217,7 @@ public class JsonFormat {
             default: return false;
         }
     }
-    
+
 
 
     private static interface Reader {
@@ -221,7 +225,7 @@ public class JsonFormat {
         char next();
         int length();
     }
-    
+
     private static class StringReader implements Reader {
 
         private char[] chars = null;
@@ -235,7 +239,7 @@ public class JsonFormat {
                 this.index = 0;
             }
         }
-        
+
         @Override
         public boolean something() {
             return index < length;
@@ -252,10 +256,10 @@ public class JsonFormat {
             return length;
         }
 
-        
-        
+
+
     }
-    
+
     private static class ReaderReader implements Reader {
 
         private java.io.Reader reader = null;
@@ -267,7 +271,7 @@ public class JsonFormat {
             this.reader = r;
             read();
         }
-        
+
         @Override
         public boolean something() {
             return something;
@@ -302,17 +306,17 @@ public class JsonFormat {
             return -1;
         }
 
-        
-        
+
+
     }
-    
+
     private static interface Writer {
         void write(char c);
         void write(String str);
         String result();
         void flush();
     }
-    
+
     private static class StringWriter implements Writer {
 
         private StringBuilder sb = null;
@@ -340,10 +344,10 @@ public class JsonFormat {
         @Override
         public void flush() {
         }
-        
+
 
     }
-    
+
     private static class WriterWriter implements Writer {
 
         private java.io.Writer w = null;
@@ -370,7 +374,7 @@ public class JsonFormat {
                 throw new IllegalStateException("Unable to write", e);
             }
         }
-        
+
         @Override
         public void flush() {
             try {
@@ -385,8 +389,8 @@ public class JsonFormat {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
 
-        
-        
+
+
     }
-    
+
 }
