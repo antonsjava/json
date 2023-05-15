@@ -57,7 +57,7 @@ or
   Useful, when you have big json and you want to extract only small 
   json sub tree at once.
  
-  Imagine you have jsom like 
+  Imagine you have json like 
 ```
   { "items" : [
  		{"name": "name-1", "value": 1},
@@ -134,9 +134,10 @@ path, you can find them by calling
 
 ```java
   JsonObject o = ...
+  JsonValue v = o.find("menu", "popup", "menuitem", "*", "value").first();
   JsonValue v = o.findFirst(SimplePathMatcher.instance("menu", "popup", "menuitem", "*", "value"));
-  List<JsonValue> list = o.findAll(SimplePathMatcher.instance("menu", "popup", "menuitem", "*", "value"));
   List<JsonValue> list = o.find("menu", "popup", "menuitem", "*", "value").all();
+  List<JsonValue> list = o.findAll(SimplePathMatcher.instance("menu", "popup", "menuitem", "*", "value"));
 ```
 
 Character '\*' stands for any path item. 
@@ -145,9 +146,10 @@ If you search for literal values you can call
 
 ```java
   JsonObject o = ...
+  Stirng v = o.find("menu", "popup", "menuitem", "*", "value").findLiteral();
   Stirng v = o.findFirstLiteral(SimplePathMatcher.instance("menu", "popup", "menuitem", "*", "value"));
-  List<String> list = o.findAllLiterals(SimplePathMatcher.instance("menu", "popup", "menuitem", "*", "value"));
   List<String> list = o.find("menu", "popup", "menuitem", "*", "value").allLiterals();
+  List<String> list = o.findAllLiterals(SimplePathMatcher.instance("menu", "popup", "menuitem", "*", "value"));
 ```
 
 If you search for literal from big structure and you don;t want to parse if first.
@@ -172,68 +174,6 @@ Example:
   List<String> list = o.findAllLiterals(WPM.fromPath("**/person-*/surname"));
 ```
 
-## Templating 
-
-JsonValue can be used as parameter for some template frameworks like freemarker.
-Method JsonValue.asTemplateParam() converts JsonValue to 
- - JsonObject to read only Map
- - JsonArray to read only List
- - JsonLiteral to its internal value (String, Long, BigDecimal, Boolean)
-So it is possible to use it directly as parameter for template framework.
-
-Example of data 
-```json
-{
-  "title": "Ing.",
-  "name": "Jano",
-  "surname": "Novotny",
-  "contractid": "1212321",
-  "raw" : {
-  	"simple": "12321",
-	"complex" : {"sub1": "2222"},
-	"list" : ["4444", "5555"],
-	"persons" : [
-		{"name":"Jano"},
-		{"name":"Peter"},
-		{"name":"Juraj"}
-	]
-  }
-}
-```
-Example of freemarker template
-```
-Hello ${name!} ${surname!"Dear client"} ${title}
-Your contract ${contractid} is registered.
-
-Example of data ${raw.complex.sub1}
-
-Simple list
-<#list raw.list as string>
-  ${string}
-</#list>
-
-Complex list
-<#list raw.persons as person>
-  person: ${person.name}
-</#list>
-```
-Result
-```
-Hello Jano Novotny Ing.
-Your contract 1212321 is registered.
-
-Example of data 2222
-
-Simple list
-  4444
-  5555
-
-Complex list
-  person: Jano
-  person: Peter
-  person: Juraj
-```
-
 
 
 ## Formatting without complete parsing
@@ -255,8 +195,8 @@ Or you can use Reader/Writer version
 ```java
   Reader jsonReader = ...
   Writer jsonWriter = ...
-  String formatedJson = JsonFormat.from(jsonReader).indent(2, ' ').toWriter(jsonWriter);
-  String formatedJson = JsonFormat.from(jsonReader).noindent().toWriter(jsonWriter);
+  JsonFormat.from(jsonReader).indent("  ").toWriter(jsonWriter);
+  JsonFormat.from(jsonReader).noindent().toWriter(jsonWriter);
 ```
 There is also possible to cut string literals to defined length. This can be useful
 for logging json which contains very long data (like binaries), which are not necessary 
@@ -264,7 +204,7 @@ to log fully.
 
 ```java
   String json = ...
-  String formatedJson = JsonFormat.from(json).indent(2, ' ').cutStringLiterals(50).toText();
+  String formatedJson = JsonFormat.from(json).indent("  ").cutStringLiterals(50).toText();
 ```
 
 The result can looks like 
