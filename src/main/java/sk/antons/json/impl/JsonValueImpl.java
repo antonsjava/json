@@ -16,6 +16,7 @@
 package sk.antons.json.impl;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import sk.antons.json.JsonArray;
 import sk.antons.json.JsonObject;
@@ -28,6 +29,7 @@ import sk.antons.json.literal.JsonIntLiteral;
 import sk.antons.json.literal.JsonLiteral;
 import sk.antons.json.literal.JsonNullLiteral;
 import sk.antons.json.literal.JsonStringLiteral;
+import sk.antons.json.match.NothingMather;
 import sk.antons.json.match.PathMatcher;
 
 /**
@@ -285,7 +287,26 @@ public abstract class JsonValueImpl implements JsonValue, JsonMember {
 
     @Override
     public PathFinder find(String... path) {
-        return PathFinder.of(this, path);
+        JsonValue jv = this;
+        int pathpos = 0;
+        while((path != null) && (path.length>pathpos) && "..".equals(path[pathpos])) pathpos++;
+        if(pathpos > 0) {
+            path = Arrays.copyOfRange(path, pathpos, path.length);
+            while(pathpos-- > 0) {
+                if(jv.parent() == null) return PathFinder.of(jv, NothingMather.instance());
+                jv = jv.parent();
+            }
+
+            //String[] newArray = new String[path.length - pathpos];
+            //System.arrayCopy(path, pathpos, newArray, 0, newArray.length);
+            //path = newArray;
+        }
+        return PathFinder.of(jv, path);
+    }
+
+    @Override
+    public PathFinder findPath(String path) {
+        return find(path.split("/"));
     }
 
 

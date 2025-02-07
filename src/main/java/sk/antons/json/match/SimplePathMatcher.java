@@ -20,12 +20,12 @@ import java.util.List;
 import sk.antons.json.JsonValue;
 
 /**
- * Check path with provided sequence of string values. Asterix character 
+ * Check path with provided sequence of string values. Asterix character
  * can be used for any name in path.
- * 
- * ["items", "*", "name"] can match paths in length 3 starting with items 
+ *
+ * ["items", "*", "name"] can match paths in length 3 starting with items
  * and ending with name.
- * 
+ *
  * @author antons
  */
 public class SimplePathMatcher implements PathMatcher {
@@ -34,7 +34,7 @@ public class SimplePathMatcher implements PathMatcher {
     public SimplePathMatcher(List<String> path) {
         this.items = path;
     }
-    
+
     public SimplePathMatcher(String... path) {
         if(path == null) return;
         this.items = new ArrayList<String>();
@@ -46,13 +46,14 @@ public class SimplePathMatcher implements PathMatcher {
     public static SimplePathMatcher instance(List<String> path) {
         return new SimplePathMatcher(path);
     }
-    
+
     public static SimplePathMatcher instance(String... path) {
         return new SimplePathMatcher(path);
     }
-    
+
     @Override
     public Match match(List<String> currentpath, JsonValue currentvalue) {
+        if(items.isEmpty()) return Match.FULLY;
         if(currentpath == null) return Match.NOPE;
         int len = currentpath.size();
         if(len == 0) return Match.MAYBE;
@@ -67,5 +68,5 @@ public class SimplePathMatcher implements PathMatcher {
         }
         return Match.NOPE;
     }
-    
+
 }

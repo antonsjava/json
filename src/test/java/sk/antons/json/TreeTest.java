@@ -49,7 +49,7 @@ public class TreeTest {
             .add("value", JsonFactory.stringLiteral("File"))
             .add("popup", o);
         rv = JsonFactory.object().add("menu", rv);
-        
+
         JsonObject person = JsonFactory.object()
             .add("name", JsonFactory.stringLiteral("John"))
             .add("surname", JsonFactory.stringLiteral("Smith"))
@@ -59,7 +59,7 @@ public class TreeTest {
                 );
         return rv;
     }
-    
+
     private JsonObject parse() {
         JsonObject o = JsonParser.parse("{\"menu\": {\n" +
 "  \"id\": \"file\",\n" +
@@ -74,7 +74,7 @@ public class TreeTest {
 "}}").asObject();
         return o;
     }
-    
+
 	public void objectTest(JsonObject o) throws Exception {
         Assert.assertNotNull(o);
         System.out.println(" ------------------------");
@@ -94,13 +94,13 @@ public class TreeTest {
         list = o.findAll(SimplePathMatcher.instance("menu", "popup", "menuitem", "*", "value"));
         System.out.println("vvv " + v.toCompactString());
         System.out.println("lll " + list);
-        
+
         Assert.assertNotNull("first menu", v);
         Assert.assertFalse("all menu", list.isEmpty());
         Assert.assertTrue("list contains menu", list.contains(v));
         Assert.assertEquals("value New", "New", v.asStringLiteral().stringValue());
         Assert.assertEquals("size ", 3, list.size());
-        
+
         String[] path = v.path();
         Assert.assertEquals("size", 5, path.length);
         Assert.assertEquals( "menu", path[0]);
@@ -108,19 +108,37 @@ public class TreeTest {
         Assert.assertEquals( "menuitem", path[2]);
         Assert.assertEquals( "0", path[3]);
         Assert.assertEquals( "value", path[4]);
-        
+
 
     }
-    
+
     @Test
 	public void parseTest() throws Exception {
         JsonObject o = parse();
         objectTest(o);
     }
-    
+
     @Test
 	public void buildTest() throws Exception {
         JsonObject o = build();
         objectTest(o);
     }
+
+    @Test
+	public void find() throws Exception {
+        JsonObject o = parse();
+        List<JsonValue> list = o.find("menu", "popup", "menuitem", "*", "value").all();
+        Assert.assertEquals(3, list.size());
+        JsonValue xx = o.find("menu", "popup", "menuitem", "*", "value").first();
+        Assert.assertTrue(xx.isLiteral());
+        Assert.assertEquals("New", xx.asStringLiteral().stringValue());
+        JsonValue xx2 = xx.find("..", "onclick").first();
+        Assert.assertEquals("CreateNewDoc()", xx2.asStringLiteral().stringValue());
+        xx2 = xx.find("..", "..", "..", "..", "value").first();
+        Assert.assertEquals("File", xx2.asStringLiteral().stringValue());
+        xx2 = xx.findPath("../../../../value").first();
+        Assert.assertEquals("File", xx2.asStringLiteral().stringValue());
+
+    }
+
 }

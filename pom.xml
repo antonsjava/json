@@ -4,7 +4,7 @@
 
     <groupId>io.github.antonsjava</groupId>
     <artifactId>json</artifactId>
-    <version>1.17</version>
+    <version>1.18</version>
     <packaging>jar</packaging>
 
     <name>json</name>

@@ -175,11 +175,22 @@ public interface JsonValue {
     PathFinder find(PathMatcher matcher);
 
     /**
-     * Finder for specified path. (SimplePathMather is used)
+     * Finder for specified path. If path starts with '..' elements
+     * It tries to change root element to parents. Rest of the path is
+     * taken as SimplePathMather path.
      * @param path path used for identifying returned values
      * @return helper class instance.
      */
     PathFinder find(String... path);
+
+    /**
+     * Finder for specified path filesystem form. Path is always relative
+     * and can start with  '..' elements. Something like "person/name" or
+     * "../../person/name"
+     * @param path path used for identifying returned values
+     * @return helper class instance.
+     */
+    PathFinder findPath(String path);
 
     /**
      * Find all json values with defined path
