@@ -143,20 +143,30 @@ public class JsonStream {
 
     private static class Context {
         boolean array = false;
+        boolean first = true;
         int arrayCounter = 0;
         Context prev;
+        List<String> path = new ArrayList<>();
 
         public static Context array(Context prev) {
             Context c = new Context();
             c.array = true;
             c.prev = prev;
+            if(prev != null) c.path.addAll(prev.path);
             return c;
         }
         public static Context object(Context prev) {
             Context c = new Context();
             c.array = false;
             c.prev = prev;
+            if(prev != null) c.path.addAll(prev.path);
             return c;
+        }
+
+        public void setPath(String value) {
+            if((!first) && (this.path.size() > 0)) this.path.remove(path.size()-1);
+            this.path.add(value);
+            this.first = false;
         }
     }
 
@@ -167,61 +177,61 @@ public class JsonStream {
             this.scanner = scanner;
         }
 
-        List<String> path = new ArrayList<>();
+        //List<String> path = new ArrayList<>();
         Context context = null;
         boolean finished = false;
 
-        private void fixPathAfterItemEnd() {
+        private void fixPathBeforeItemSTart() {
             if((context != null) && context.array) {
-                if(path.size()>0) path.remove(path.size()-1);
-                path.add(String.valueOf(context.arrayCounter++));
-            } else {
-                if(path.size()>0) path.remove(path.size()-1);
+                context.setPath(String.valueOf(context.arrayCounter++));
             }
         }
 
         private JsonValue nextPath() {
-            if(context != null) {
-                fixPathAfterItemEnd();
-                if(context.array) {
-                    Match match = matcher.match(path, null);
-                    if(match == Match.FULLY) {
-                        JsonValue v = scanner.readNext();
-                        if(v == null) {
-                            context = context.prev;
-                            if(path.size()>0) path.remove(path.size()-1);
-                        } else {
-                            return v;
-                        }
-                    }
-                }
-            }
+//            if(context != null) {
+//                fixPathAfterItemEnd();
+//                if(context.array) {
+//                    Match match = matcher.match(path, null);
+//                    if(match == Match.FULLY) {
+//                        JsonValue v = scanner.readNext();
+//                        if(v == null) {
+//                            context = context.prev;
+//                            if(path.size()>0) path.remove(path.size()-1);
+//                        } else {
+//                            return v;
+//                        }
+//                    }
+//                }
+//            }
             Token token = scanner.next();
             if(token == null) return null;
             while(token != null) {
                 if(token == Token.OBJECT_START) {
+                    fixPathBeforeItemSTart();
                     context = Context.object(context);
                 } else if(token == Token.ARRAY_START) {
+                    fixPathBeforeItemSTart();
                     context = Context.array(context);
-                    path.add(String.valueOf(context.arrayCounter++));
-                    Match match = matcher.match(path, null);
+                    Match match = matcher.match(context.path, null);
                     if(match == Match.FULLY) {
                         return scanner.readNext();
+                    } else if(match == Match.NOPE) {
+                        scanner.readNext();
                     }
                 } else if(token == Token.NAME) {
-                    path.add(scanner.stringValue());
-                    Match match = matcher.match(path, null);
+                    context.setPath(scanner.stringValue());
+                    Match match = matcher.match(context.path, null);
                     if(match == Match.FULLY) {
                         return scanner.readNext();
+                    } else if(match == Match.NOPE) {
+                        scanner.readNext();
                     }
                 } else if(token == Token.OBJECT_END) {
                     context = context.prev;
-                    fixPathAfterItemEnd();
                 } else if(token == Token.ARRAY_END) {
                     context = context.prev;
-                    fixPathAfterItemEnd();
                 } else { //literal
-                    fixPathAfterItemEnd();
+                    fixPathBeforeItemSTart();
                 }
                 token = scanner.next();
             }
@@ -247,8 +257,8 @@ public class JsonStream {
 
 
     public static void main(String[] argv) throws Exception {
-        Reader reader = new FileReader("/home/antons/Downloads/sample.json");
-        JsonStream stream = JsonStream.instance(reader, SPM.path("web-app", "servlet", "*", "servlet-name"));
+        Reader reader = new FileReader("/home/antons/Downloads/api-docs.json");
+        JsonStream stream = JsonStream.instance(reader, SPM.path("components", "schemas", "*"));
 
         Iterator<JsonValue> iter = stream.iterator();
         while(iter.hasNext()) {
