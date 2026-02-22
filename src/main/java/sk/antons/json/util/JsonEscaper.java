@@ -111,6 +111,17 @@ public class JsonEscaper {
         return escape(value, escapeNonAscii, 0, value.length());
     }
 
+    private static ThreadLocal<StringBuilder> buffer = new ThreadLocal<>();
+    private static StringBuilder buffer() {
+        StringBuilder rv = buffer.get();
+        if(rv == null) {
+            rv = new StringBuilder();
+            buffer.set(rv);
+        }
+        rv.setLength(0);
+        return rv;
+    }
+
     /**
      * Escape input string.
      * @param value input string
@@ -121,7 +132,8 @@ public class JsonEscaper {
      */
     public static String escape(String value, boolean escapeNonAscii, int offset, int length) {
         if(value == null) return null;
-        StringBuilder sb = new StringBuilder(value.length()*2);
+        //StringBuilder sb = new StringBuilder(value.length()*2);
+        StringBuilder sb = buffer();
         int len = offset + length;
         for(int i = offset; i < len; i++) {
             char c = value.charAt(i);
@@ -161,7 +173,8 @@ public class JsonEscaper {
      */
     public static String unescape(String value, int offset, int length) {
         if(value == null) return null;
-        StringBuilder sb = new StringBuilder(value.length()*2);
+        //StringBuilder sb = new StringBuilder(value.length()*2);
+        StringBuilder sb = buffer();
         int len = offset + length;
         boolean escape = false;
         for(int i = offset; i < len; i++) {
@@ -180,7 +193,7 @@ public class JsonEscaper {
 					case '/': sb.append('/'); break;
 					case 'b': sb.append('\b'); break;
 					case 'f': sb.append('\f'); break;
-					case 'u': 
+					case 'u':
 						sb.append(unescapeChar(value, i-1));
 						i = i+4;
 						break;
