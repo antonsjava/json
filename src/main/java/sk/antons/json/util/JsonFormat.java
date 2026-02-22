@@ -34,6 +34,7 @@ public class JsonFormat {
     private boolean cut = false;
     private String indenttext = null;
     private int cutLength = 1;
+    private int expectedLength = 4096;
 
 
     private JsonFormat(Reader reader) { this.reader = reader; }
@@ -73,9 +74,14 @@ public class JsonFormat {
         return this;
     }
 
+    public JsonFormat expectedLength(int num) {
+        expectedLength = num;
+        return this;
+    }
+
     public String toText() {
         int len = reader.length();
-        if(len <=0) len = 100;
+        if(len <=0) len = expectedLength;
         if(indent) len = len*2;
         this.writer = new StringWriter(len);
         process();

@@ -35,7 +35,7 @@ public class JsonEscaper {
     private static char tohex(int c) {
          return hex[c & 0xf];
     }
-    
+
     /**
      * Escapes character
      * @param c input character
@@ -63,7 +63,7 @@ public class JsonEscaper {
     public static char unescapeChar(String value) {
         return unescapeChar(value, 0);
     }
-    
+
     /**
      * Unescape escaped string into character.
      * @param value string
@@ -90,7 +90,7 @@ public class JsonEscaper {
 
         return (char)rv;
     }
-    
+
     /**
      * Escape input string.
      * @param value input string
@@ -99,7 +99,7 @@ public class JsonEscaper {
     public static String escape(String value) {
         return escape(value, false);
     }
-    
+
     /**
      * Escape input string.
      * @param value input string
@@ -110,7 +110,7 @@ public class JsonEscaper {
         if(value == null) return null;
         return escape(value, escapeNonAscii, 0, value.length());
     }
-    
+
     /**
      * Escape input string.
      * @param value input string
@@ -121,20 +121,23 @@ public class JsonEscaper {
      */
     public static String escape(String value, boolean escapeNonAscii, int offset, int length) {
         if(value == null) return null;
-        StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder(value.length()*2);
         int len = offset + length;
         for(int i = offset; i < len; i++) {
             char c = value.charAt(i);
-            if(c == '"') sb.append("\\\"");
-            else if(c == '\\') sb.append("\\\\");
-            else if(c == '\n') sb.append("\\n");
-            else if(c == '\t') sb.append("\\t");
-            else if(c == '\r') sb.append("\\r");
-            //else if(c == '/') sb.append("\\/");
-            else if(c == '\b') sb.append("\\b");
-            else if(c == '\f') sb.append("\\f");
-            else if(escapeNonAscii && (c > 127)) sb.append(escapeChar(c));
-            else sb.append(c);
+            switch(c) {
+                case '"': sb.append("\\\""); break;
+				case '\\': sb.append("\\\\"); break;
+				case '\n': sb.append("\\n"); break;
+				case '\t': sb.append("\\t"); break;
+				case '\r': sb.append("\\r"); break;
+				//case /': sb.append("\\/"); break;
+				case '\b': sb.append("\\b"); break;
+				case '\f': sb.append("\\f"); break;
+                default:
+                    if(escapeNonAscii && (c > 127)) sb.append(escapeChar(c));
+                    else sb.append(c);
+            }
         }
         return sb.toString();
     }
@@ -158,7 +161,7 @@ public class JsonEscaper {
      */
     public static String unescape(String value, int offset, int length) {
         if(value == null) return null;
-        StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder(value.length()*2);
         int len = offset + length;
         boolean escape = false;
         for(int i = offset; i < len; i++) {
@@ -169,24 +172,28 @@ public class JsonEscaper {
                     escape = false;
                 } else escape = true;
             } else if(escape) {
-                if(c == 'n') sb.append('\n');
-                else if(c == '"') sb.append('"');
-                else if(c == 't') sb.append('\t');
-                else if(c == 'r') sb.append('\r');
-                else if(c == '/') sb.append('/');
-                else if(c == 'b') sb.append('\b');
-                else if(c == 'f') sb.append('\f');
-                else if(c == 'u') {
-                    sb.append(unescapeChar(value, i-1));
-                    i = i+4;
-                } else throw new IllegalArgumentException("Can't unescape char '" + c + "'");
+                switch(c) {
+                    case 'n': sb.append('\n'); break;
+					case '"': sb.append('"'); break;
+					case 't': sb.append('\t'); break;
+					case 'r': sb.append('\r'); break;
+					case '/': sb.append('/'); break;
+					case 'b': sb.append('\b'); break;
+					case 'f': sb.append('\f'); break;
+					case 'u': 
+						sb.append(unescapeChar(value, i-1));
+						i = i+4;
+						break;
+                    default:
+                		throw new IllegalArgumentException("Can't unescape char '" + c + "'");
+                }
                 escape = false;
             } else {
                 sb.append(c);
             }
         }
         return sb.toString();
-    
+
     }
 
     public static void main(String[] params) {
@@ -200,6 +207,6 @@ public class JsonEscaper {
         System.out.println(" >>> " + bd.toString());
         System.out.println(" >>> " + bd.toPlainString());
         System.out.println(" >>> " + bd.toEngineeringString());
-    }     
-    
+    }
+
 }

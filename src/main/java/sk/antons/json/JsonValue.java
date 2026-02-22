@@ -41,9 +41,11 @@ public interface JsonValue {
 
     /**
      * Produces compact string representation of this json value.
+     * @param length expected length
      * @return compact string value
      */
-    String toCompactString();
+    String toCompactString(int length);
+    default String toCompactString() { return toCompactString(4096); }
 
     /**
      * Produces pretty (readable) string representation of this json value.
@@ -55,9 +57,11 @@ public interface JsonValue {
     /**
      * Produces pretty (readable) string representation of this json value.
      * @param indent string used for indend nested levels. (ussually tab or some spaces)
+     * @param length expected length
      * @return pretty string value
      */
-    String toPrettyString(String indent);
+    String toPrettyString(String indent, int lenght);
+    default String toPrettyString(String indent) { return toPrettyString(indent, 4096); }
 
     /**
      * Cast this value instance to JsonObject

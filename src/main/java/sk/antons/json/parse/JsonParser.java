@@ -66,9 +66,19 @@ public class JsonParser {
      * @return Json value representing the json data.
      */
     public static JsonValue parsePrefetched(Reader json) {
+        return parsePrefetched(json, 4096);
+    }
+    /**
+     * Parse json from reader. But first it reads as String and than parse it as string.
+     * It is faster for small jsnons.
+     * @param json reader with json object array of just literal.
+     * @param length expected lenght;
+     * @return Json value representing the json data.
+     */
+    public static JsonValue parsePrefetched(Reader json, int lenght) {
         try {
             if(!(json instanceof BufferedReader)) json = new BufferedReader(json);
-            StringBuilder buffer = new StringBuilder();
+            StringBuilder buffer = new StringBuilder(lenght);
             char[] arr = new char[2048];
             int numCharsRead;
             while ((numCharsRead = json.read(arr, 0, arr.length)) != -1) {
@@ -137,7 +147,7 @@ public class JsonParser {
                 if(ccurrent instanceof JsonMember) ccurrent = ((JsonMember)ccurrent).group();
                 else ccurrent = null;
             }
-            StringBuilder sb = new StringBuilder();
+            StringBuilder sb = new StringBuilder(300);
             for(int i = items.size() - 1; i >= 0; i--) {
                 if(sb.length() > 0) sb.append(" / ");
                 sb.append(items.get(i));
@@ -146,7 +156,7 @@ public class JsonParser {
         }
 
         private static String expectedValues(int expected) {
-            StringBuilder sb = new StringBuilder();
+            StringBuilder sb = new StringBuilder(300);
             for(Step value : Step.values()) {
                 if((value.bit & expected) == 0) continue;
                 if(sb.length() > 0) sb.append(", ");

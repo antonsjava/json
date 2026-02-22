@@ -67,15 +67,15 @@ public abstract class JsonValueImpl implements JsonValue, JsonMember {
     @Override public boolean isLiteral() { return this instanceof JsonLiteral; }
 
     @Override
-    public String toCompactString() {
-        StringBuilder sb = new StringBuilder();
+    public String toCompactString(int length) {
+        StringBuilder sb = new StringBuilder(length);
         toCompactString(sb);
         return sb.toString();
     }
 
     @Override
-    public String toPrettyString(String indent) {
-        StringBuilder sb = new StringBuilder();
+    public String toPrettyString(String indent, int lenght) {
+        StringBuilder sb = new StringBuilder(lenght);
         toPrettyString(sb, "", indent);
         return sb.toString();
     }
@@ -210,7 +210,7 @@ public abstract class JsonValueImpl implements JsonValue, JsonMember {
 
     @Override
     public String pathAsString() {
-        StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder(300);
         String[] path = path();
         if(path != null) {
             for(String string : path) {
