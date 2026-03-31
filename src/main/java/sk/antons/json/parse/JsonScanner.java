@@ -29,7 +29,7 @@ import sk.antons.json.source.StringSource;
 import sk.antons.json.util.JsonEscaper;
 
 /**
- * Json parer, which traverse json tree and produces events defined in 
+ * Json parer, which traverse json tree and produces events defined in
  * JsonContentHandler.
  * @author antons
  */
@@ -51,45 +51,53 @@ public class JsonScanner {
     public static JsonScanner instance(JsonSource source) {
         return new JsonScanner(source);
     }
-    
+
     public static JsonScanner instance(String json) {
         return new JsonScanner(new StringSource(json));
     }
-    
+
     public static JsonScanner instance(Reader reader) {
         return new JsonScanner(new ReaderSource(reader));
     }
-    
+
     public Token current() { return current; }
     public Token next() {
         current = nextTokenImpl();
         return current;
     }
-    public Token skipNext() { 
+    public Token skipNext() {
         int num = 0;
         Token t = null;
         do {
             t = next();
             switch(t) {
-                case ARRAY_START: 
+                case ARRAY_START:
                     num++;
                     break;
-                case ARRAY_END: 
+                case ARRAY_END:
                     num--;
                     break;
-                case OBJECT_START: 
+                case OBJECT_START:
                     num++;
                     break;
-                case OBJECT_END: 
+                case OBJECT_END:
                     num--;
                     break;
             }
         } while((t != null) && (num > 0));
         return next();
     }
-    
+
+
+    public JsonValue readCurrent(Token token) {
+        return readNextWithStarting(token);
+    }
+
     public JsonValue readNext() {
-        Token token = next();
+        return readNextWithStarting(next());
+    }
+
+    private JsonValue readNextWithStarting(Token token) {
         if(token == null) throw new IllegalStateException("no tohen ");
         switch(token) {
             case ARRAY_START:
@@ -105,7 +113,7 @@ public class JsonScanner {
             case OBJECT_START:
                 JsonObject object = JsonFactory.object();
                 token = next();
-                while(token == Token.NAME) { 
+                while(token == Token.NAME) {
                     object.add(stringValue(), readNext());
                     token = next();
                 }
@@ -125,23 +133,23 @@ public class JsonScanner {
                 throw new IllegalStateException("unknown tohen " +token + " - ");
         }
     }
-    
+
     public String stringValue() {
         return stringValueImpl();
     }
-    
+
     public long intValue() {
         return Long.parseLong(stringValueImpl());
     }
-    
+
     public BigDecimal bdValue() {
         return new BigDecimal(stringValueImpl());
     }
-    
+
     public boolean booleanValue() {
         return "true".equals((stringValueImpl()));
     }
-    
+
     private String stringValueImpl() {
         if(isLiteral) {
             char c = buff.charAt(startpos);
@@ -154,7 +162,7 @@ public class JsonScanner {
             throw new IllegalArgumentException("Current token is not literal");
         }
     }
-    
+
 
     private Token nextTokenImpl() {
         try {
@@ -224,7 +232,7 @@ public class JsonScanner {
             default: return false;
         }
     }
-    
+
     private boolean isNonLiteral(int c) {
         switch (c) {
             case ':': return true;
@@ -240,7 +248,7 @@ public class JsonScanner {
             default: return false;
         }
     }
-    
+
 //    private void skipWhiteSpace2(int c) {
 //        while((c != -1) && (isWhiteSpace(c))) {
 //            source.move();
@@ -305,7 +313,7 @@ public class JsonScanner {
         buff = source.recordedContent();
         return toLiteralToken(buff, startpos, endpos);
     }
-    
+
     private void skipLiteralEscaped(int c) {
         startpos = source.startRecording();
         boolean escape = false;
@@ -333,23 +341,23 @@ public class JsonScanner {
     private static Pattern boolPattern = Pattern.compile("true|false");
     private static Pattern intPattern = Pattern.compile("[+-]?[0-9]+");
     private static Pattern bdPattern = Pattern.compile("[+-]?[0-9]+\\.?[0-9]+([eE][+-]?[0-9]+)?");
-    
+
     private static Token toLiteralToken(String text, int startpos, int endpos) {
         if(text == null) return Token.LITERAL_NULL;
         if(text.length() == 0) return Token.LITERAL_TEXT;
         char c = text.charAt(0);
         if(c == 'n') {
-            return "null".equals(text.subSequence(startpos, endpos)) ? Token.LITERAL_NULL : Token.LITERAL_TEXT; 
+            return "null".equals(text.subSequence(startpos, endpos)) ? Token.LITERAL_NULL : Token.LITERAL_TEXT;
         } else if((c == 't') || (c == 'f')) {
-            return boolPattern.matcher(text.subSequence(startpos, endpos)).matches() ? Token.LITERAL_BOOL : Token.LITERAL_TEXT; 
+            return boolPattern.matcher(text.subSequence(startpos, endpos)).matches() ? Token.LITERAL_BOOL : Token.LITERAL_TEXT;
         } else if((c == '+') || (c == '-') || ( (c >= '0') && (c <= '9') )) {
             if(intPattern.matcher(text.subSequence(startpos, endpos)).matches()) return Token.LITERAL_INT;
-            return bdPattern.matcher(text.subSequence(startpos, endpos)).matches() ? Token.LITERAL_BD : Token.LITERAL_TEXT; 
+            return bdPattern.matcher(text.subSequence(startpos, endpos)).matches() ? Token.LITERAL_BD : Token.LITERAL_TEXT;
         } else {
             return Token.LITERAL_TEXT;
         }
     }
-    
+
     public static enum Token {
         ARRAY_START
         , ARRAY_END

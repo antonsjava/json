@@ -22,6 +22,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Spliterator;
 import java.util.Spliterators;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import sk.antons.json.JsonValue;
@@ -153,6 +154,7 @@ public class JsonStream {
             c.array = true;
             c.prev = prev;
             if(prev != null) c.path.addAll(prev.path);
+            c.path.add(String.valueOf(c.arrayCounter++));
             return c;
         }
         public static Context object(Context prev) {
@@ -160,13 +162,21 @@ public class JsonStream {
             c.array = false;
             c.prev = prev;
             if(prev != null) c.path.addAll(prev.path);
+            c.path.add("---empty---");
             return c;
         }
 
         public void setPath(String value) {
-            if((!first) && (this.path.size() > 0)) this.path.remove(path.size()-1);
+            if(this.path.size() > 0) this.path.remove(path.size()-1);
             this.path.add(value);
             this.first = false;
+        }
+
+        public Context prev() {
+            if((prev != null) && prev.array) {
+                prev.setPath(String.valueOf(prev.arrayCounter++));
+            }
+            return prev;
         }
     }
 
@@ -183,7 +193,8 @@ public class JsonStream {
 
         private void fixPathBeforeItemSTart() {
             if((context != null) && context.array) {
-                context.setPath(String.valueOf(context.arrayCounter++));
+                //System.out.println(" ----->>>> array counter " + context.arrayCounter);
+                //context.setPath(String.valueOf(context.arrayCounter++));
             }
         }
 
@@ -207,17 +218,21 @@ public class JsonStream {
             if(token == null) return null;
             while(token != null) {
                 if(token == Token.OBJECT_START) {
-                    fixPathBeforeItemSTart();
+                    if(context != null) {
+                        Match match = matcher.match(context.path, null);
+                        if(match == Match.FULLY) {
+                            return scanner.readCurrent(token);
+                        }
+                    }
                     context = Context.object(context);
                 } else if(token == Token.ARRAY_START) {
-                    fixPathBeforeItemSTart();
-                    context = Context.array(context);
-                    Match match = matcher.match(context.path, null);
-                    if(match == Match.FULLY) {
-                        return scanner.readNext();
-                    } else if(match == Match.NOPE) {
-                        scanner.readNext();
+                    if(context != null) {
+                        Match match = matcher.match(context.path, null);
+                        if(match == Match.FULLY) {
+                            return scanner.readCurrent(token);
+                        }
                     }
+                    context = Context.array(context);
                 } else if(token == Token.NAME) {
                     context.setPath(scanner.stringValue());
                     Match match = matcher.match(context.path, null);
@@ -227,11 +242,16 @@ public class JsonStream {
                         scanner.readNext();
                     }
                 } else if(token == Token.OBJECT_END) {
-                    context = context.prev;
+                    context = context.prev();
                 } else if(token == Token.ARRAY_END) {
-                    context = context.prev;
+                    context = context.prev();
                 } else { //literal
-                    fixPathBeforeItemSTart();
+                    if(context != null) {
+                        Match match = matcher.match(context.path, null);
+                        if(match == Match.FULLY) {
+                            return scanner.readCurrent(token);
+                        }
+                    }
                 }
                 token = scanner.next();
             }
@@ -257,8 +277,8 @@ public class JsonStream {
 
 
     public static void main(String[] argv) throws Exception {
-        Reader reader = new FileReader("/home/antons/Downloads/api-docs.json");
-        JsonStream stream = JsonStream.instance(reader, SPM.path("components", "schemas", "*"));
+        Reader reader = new FileReader("/home/antons/Downloads/landRegistryCodelists (1).json" );
+        JsonStream stream = JsonStream.instance(reader, SPM.path("*"));
 
         Iterator<JsonValue> iter = stream.iterator();
         while(iter.hasNext()) {
